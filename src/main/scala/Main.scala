@@ -1,10 +1,8 @@
 import io.getblok.getblok_plasma.{PlasmaParameters, ByteConversion}
 import io.getblok.getblok_plasma.collections.{OpResult, PlasmaMap, Proof, ProvenResult}
-import io.getblok.getblok_plasma.ByteConversion.convertsLongVal
 import org.ergoplatform.appkit.ErgoId
 import sigmastate.AvlTreeFlags
-import io.getblok.getblok_plasma.PlasmaKey
-import scorex.crypto.hash.{Blake2b256, Digest32}
+import scorex.crypto.hash.Blake2b256
 
 object Main {
 
