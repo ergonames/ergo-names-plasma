@@ -10,5 +10,11 @@
         "mnemonicPassword": ""
       },
       "networkType": ""
+    },
+    "parameters": {
+      "defaultExplorerApiUrl": "",
+      "initialTxId": "",
+      "initialBoxId": "",
+      "mostRecentBoxId": ""
     }
 }

@@ -49,22 +49,12 @@ object InitializeRegistry {
       val boxesToSpend = ctx.getUnspentBoxesFor(senderAddress, 0, 20)
 
       val tokenMap = new PlasmaMap[ErgoNameHash, ErgoId](AvlTreeFlags.AllOperationsAllowed, PlasmaParameters.default)
-      val ergoname: ErgoNameHash = ErgoName("test").toErgoNameHash
-      val tokenId: ErgoId = ErgoId.create("0cd8c9f416e5b1ca9f986a7f10a84191dfb85941619e49e53c0dc30ebf83324b")
-      val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergoname -> tokenId)
-      val result: ProvenResult[ErgoId] = tokenMap.insert(ergonameData: _*)
-      val opResults: Seq[OpResult[ErgoId]] = result.response
-      val proof: Proof = result.proof
       
       val outBox = ctx.newTxBuilder.outBoxBuilder
         .value(Parameters.MinChangeValue)
         .contract(compiledContract)
         .registers(
-          tokenMap.ergoValue,
-          tokenMap.ergoValue,
-          ErgoValue.of(ergoname.hashedName),
-          ErgoValue.of(tokenId.getBytes),
-          proof.ergoValue
+          tokenMap.ergoValue
         )
         .build()
 
@@ -76,10 +66,8 @@ object InitializeRegistry {
         .build()
 
       val signed = prover.sign(tx)
-      val txId = signed.toJson(true)
+      val txId = ctx.sendTransaction(signed)
       txId
-      // val txId = ctx.sendTransaction(signed)
-      // txId
     })
     println(txId)
   }

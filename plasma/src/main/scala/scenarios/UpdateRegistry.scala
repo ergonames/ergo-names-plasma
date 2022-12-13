@@ -1,6 +1,6 @@
 package scenarios
 
-import utils.ErgoScriptContract
+import utils.{ErgoScriptContract, RegistrySync}
 
 import io.getblok.getblok_plasma.{PlasmaParameters, ByteConversion}
 import io.getblok.getblok_plasma.collections.{OpResult, PlasmaMap, Proof, ProvenResult}
@@ -28,6 +28,13 @@ object UpdateRegistry {
 
     val toolConfig = ErgoToolConfig.load("config.json")
     val nodeConfig = toolConfig.getNode()
+
+    val configParameters = toolConfig.getParameters()
+    val defaultTestnetExplorerUrl = configParameters.get("defaultTestnetExplorerUrl")
+    val initialTxId = configParameters.get("initialTxId")
+    val initialBoxId = configParameters.get("initialBoxId")
+    val mostRecentBoxId = configParameters.get("mostRecentBoxId")
+
     val ergoClient = RestApiErgoClient.create(nodeConfig, RestApiErgoClient.defaultTestnetExplorerUrl)
     val txId = ergoClient.execute((ctx: BlockchainContext) => {
       val prover = ctx.newProverBuilder
@@ -46,17 +53,17 @@ object UpdateRegistry {
       )
       val contractAddress = Address.fromErgoTree(compiledContract.getErgoTree, ctx.getNetworkType)
 
-      val rawBoxes = ctx.getBoxesById("31f602e7aef8fd2208d2f289df1878dce7216a57096916d13f68f0eacd2a0f2e")
+      val rawBoxes = ctx.getBoxesById(mostRecentBoxId)
       var boxesToSpend: java.util.List[InputBox] = new java.util.ArrayList[InputBox]()
       for (box <- rawBoxes) {
         boxesToSpend.add(box)
       }
       val spendBox = boxesToSpend.get(0)
       val registers = spendBox.getRegisters()
-      val registry = registers.get(4)
+      val registry = registers.get(0)
       println(registry.getType())
 
-      val tokenMap = new PlasmaMap[ErgoNameHash, ErgoId](AvlTreeFlags.AllOperationsAllowed, PlasmaParameters.default)
+      val tokenMap = RegistrySync.syncRegistry(initialTxId, defaultTestnetExplorerUrl)
       val ergoname: ErgoNameHash = ErgoName("test").toErgoNameHash
       val tokenId: ErgoId = ErgoId.create("0cd8c9f416e5b1ca9f986a7f10a84191dfb85941619e49e53c0dc30ebf83324b")
       val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergoname -> tokenId)
@@ -68,8 +75,6 @@ object UpdateRegistry {
         .value(Parameters.MinChangeValue)
         .contract(compiledContract)
         .registers(
-          tokenMap.ergoValue,
-          tokenMap.ergoValue,
           ErgoValue.of(ergoname.hashedName),
           ErgoValue.of(tokenId.getBytes),
           proof.ergoValue

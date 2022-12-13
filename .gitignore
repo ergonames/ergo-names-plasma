@@ -1,4 +1,4 @@
-/target/
+plasma/target/
 
 .metals/
 .bloop/
@@ -7,7 +7,7 @@
 .idea/
 null/
 
-project/target/
-project/project/
+plasma/project/target/
+plasma/project/project/
 
-config.json
+plasma/config.json
