@@ -1,14 +1,13 @@
 {
-    val selfOut = OUTPUTS(0)
+    val registry = SELF.R4[AvlTree].get
 
-    val inTree = selfOut.R4[AvlTree].get
-    val outTree = selfOut.R5[AvlTree].get
-    val key = selfOut.R6[Coll[Byte]].get
-    val value = selfOut.R7[Coll[Byte]].get
-    val proof = selfOut.R8[Coll[Byte]].get
+    val key = INPUTS(0).R4[Coll[Byte]].get
+    val value = INPUTS(0).R5[Coll[Byte]].get
+    val proof = INPUTS(0).R6[Coll[Byte]].get
+    val updatedRegistry = registry.insert(Coll((key, value)), proof).get
 
-    val newTree = inTree.insert(Coll((key, value)), proof).get
-    val validSpend = SELF.propositionBytes == selfOut.propositionBytes && outTree == newTree
+    val validInsertion = OUTPUTS(0).R4[AvlTree].get.digest == updatedRegistry.digest
+    val validScript = OUTPUTS(0).propositionBytes == SELF.propositionBytes
 
-    sigmaProp(validSpend)
+    sigmaProp(validInsertion && validScript)
 }
