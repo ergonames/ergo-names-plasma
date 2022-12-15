@@ -8,6 +8,7 @@ import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 import sigmastate.AvlTreeFlags
 import scorex.crypto.hash.Blake2b256
+import org.ergoplatform.explorer.client.{ExplorerApiClient, DefaultApi}
 
 object UpdateRegistry {
 
@@ -36,6 +37,7 @@ object UpdateRegistry {
     val mostRecentBoxId = configParameters.get("mostRecentBoxId")
 
     val ergoClient = RestApiErgoClient.create(nodeConfig, RestApiErgoClient.defaultTestnetExplorerUrl)
+    val explorerClient = new ExplorerApiClient(RestApiErgoClient.defaultTestnetExplorerUrl).createService(classOf[DefaultApi])
     val txId = ergoClient.execute((ctx: BlockchainContext) => {
       val prover = ctx.newProverBuilder
         .withMnemonic(
@@ -53,17 +55,16 @@ object UpdateRegistry {
       )
       val contractAddress = Address.fromErgoTree(compiledContract.getErgoTree, ctx.getNetworkType)
 
-      val rawBoxes = ctx.getBoxesById(mostRecentBoxId)
+      val contractBoxes = ctx.getBoxesById(mostRecentBoxId)
       var boxesToSpend: java.util.List[InputBox] = new java.util.ArrayList[InputBox]()
-      for (box <- rawBoxes) {
+      for (box <- contractBoxes) {
         boxesToSpend.add(box)
       }
-      val spendBox = boxesToSpend.get(0)
-      val registers = spendBox.getRegisters()
+      val contractBox = boxesToSpend.get(0)
+      val registers = contractBox.getRegisters()
       val registry = registers.get(0)
-      println(registry.getType())
 
-      val tokenMap = RegistrySync.syncRegistry(initialTxId, defaultTestnetExplorerUrl)
+      val tokenMap: PlasmaMap[ErgoNameHash, ErgoId] = RegistrySync.syncRegistry(initialTxId, explorerClient)
       val ergoname: ErgoNameHash = ErgoName("test").toErgoNameHash
       val tokenId: ErgoId = ErgoId.create("0cd8c9f416e5b1ca9f986a7f10a84191dfb85941619e49e53c0dc30ebf83324b")
       val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergoname -> tokenId)
@@ -75,12 +76,16 @@ object UpdateRegistry {
         .value(Parameters.MinChangeValue)
         .contract(compiledContract)
         .registers(
+          tokenMap.ergoValue,
           ErgoValue.of(ergoname.hashedName),
           ErgoValue.of(tokenId.getBytes),
           proof.ergoValue
         )
         .build()
 
+      val walletBoxes = ctx.getUnspentBoxesFor(senderAddress, 0, 20)
+      boxesToSpend.addAll(walletBoxes)
+      
       val tx = ctx.newTxBuilder
         .boxesToSpend(boxesToSpend)
         .outputs(outBox)
@@ -90,6 +95,7 @@ object UpdateRegistry {
 
       val signed = prover.sign(tx)
       val txId = signed.toJson(true)
+      println(txId)
       txId
       // val txId = ctx.sendTransaction(signed)
       // txId

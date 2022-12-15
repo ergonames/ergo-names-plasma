@@ -1,9 +1,9 @@
 {
     val registry = SELF.R4[AvlTree].get
 
-    val key = INPUTS(0).R4[Coll[Byte]].get
-    val value = INPUTS(0).R5[Coll[Byte]].get
-    val proof = INPUTS(0).R6[Coll[Byte]].get
+    val key = INPUTS(0).R5[Coll[Byte]].get
+    val value = INPUTS(0).R6[Coll[Byte]].get
+    val proof = INPUTS(0).R7[Coll[Byte]].get
     val updatedRegistry = registry.insert(Coll((key, value)), proof).get
 
     val validInsertion = OUTPUTS(0).R4[AvlTree].get.digest == updatedRegistry.digest

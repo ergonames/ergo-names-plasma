@@ -1,4 +1,4 @@
-plasma/target/
+target/
 
 .metals/
 .bloop/
@@ -9,8 +9,7 @@ null/
 
 db/
 
-plasma/project/target/
-plasma/project/project/
+project/target/
+project/project/
 
-plasma/config.json
-sync-engine/config.json
+config.json
