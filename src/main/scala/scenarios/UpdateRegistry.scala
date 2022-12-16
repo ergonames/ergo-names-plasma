@@ -18,7 +18,7 @@ object UpdateRegistry {
 
   case class ErgoNameHash(hashedName: Array[Byte])
 
-  implicit val nameConversion: ByteConversion[ErgoNameHash] = new ByteConversion[ErgoNameHash] {
+  implicit val nameConversion: ByteConversion[ErgoNameHash] = new ByteConversion[ErgoNameHash] {    
     override def convertToBytes(t: ErgoNameHash): Array[Byte] = t.hashedName
 
     override def convertFromBytes(bytes: Array[Byte]): ErgoNameHash = ErgoNameHash(bytes)
@@ -60,9 +60,9 @@ object UpdateRegistry {
       val registers = contractBox.getRegisters()
       val registry = registers.get(0)
 
-      val tokenMap: PlasmaMap[ErgoNameHash, ErgoId] = RegistrySync.syncRegistry(initialTxId, explorerClient)
-      val ergoname: ErgoNameHash = ErgoName("test").toErgoNameHash
-      val tokenId: ErgoId = ErgoId.create("0cd8c9f416e5b1ca9f986a7f10a84191dfb85941619e49e53c0dc30ebf83324b")
+      val tokenMap: PlasmaMap[ErgoNameHash, ErgoId] = RegistrySync.syncRegistry(initialTxId, explorerClient, ctx)
+      val ergoname: ErgoNameHash = ErgoName("secondtest").toErgoNameHash
+      val tokenId: ErgoId = ErgoId.create("fbbaac7337d051c10fc3da0ccb864f4d32d40027551e1c3ea3ce361f39b91e40")
       val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergoname -> tokenId)
       val result: ProvenResult[ErgoId] = tokenMap.insert(ergonameData: _*)
       val opResults: Seq[OpResult[ErgoId]] = result.response
@@ -100,7 +100,7 @@ object UpdateRegistry {
       val signed = prover.sign(tx)
       val txId = signed.toJson(true)
       println(txId)
-      // ctx.sendTransaction(signed)
+      ctx.sendTransaction(signed)
       txId
     })
     println(txId)
