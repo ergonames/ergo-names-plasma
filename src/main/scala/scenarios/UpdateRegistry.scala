@@ -94,13 +94,13 @@ object UpdateRegistry {
         .boxesToSpend(boxesToSpend)
         .outputs(outBox)
         .fee(Parameters.MinFee)
-        .sendChangeTo(contractAddress.getErgoAddress())
+        .sendChangeTo(senderAddress.getErgoAddress())
         .build()
 
       val signed = prover.sign(tx)
       val txId = signed.toJson(true)
       println(txId)
-      ctx.sendTransaction(signed)
+      // ctx.sendTransaction(signed)
       txId
     })
     println(txId)
