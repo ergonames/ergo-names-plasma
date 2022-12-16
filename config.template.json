@@ -15,6 +15,9 @@
       "defaultExplorerApiUrl": "",
       "initialTxId": "",
       "initialBoxId": "",
-      "mostRecentBoxId": ""
+      "mostRecentBoxId": "",
+      "ergoNameToRegister": "",
+      "tokenIdToRegister": "",
+      "serviceMode": ""
     }
 }

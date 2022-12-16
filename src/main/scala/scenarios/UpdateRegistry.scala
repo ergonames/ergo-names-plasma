@@ -35,6 +35,9 @@ object UpdateRegistry {
     val initialTxId = configParameters.get("initialTxId")
     val initialBoxId = configParameters.get("initialBoxId")
     val mostRecentBoxId = configParameters.get("mostRecentBoxId")
+    val ergoNameToRegister = configParameters.get("ergoNameToRegister")
+    val tokenIdToRegister = configParameters.get("tokenIdToRegister")
+    val serviceMode = configParameters.get("serviceMode")
 
     val ergoClient = RestApiErgoClient.create(nodeConfig, RestApiErgoClient.defaultTestnetExplorerUrl)
     val explorerClient = new ExplorerApiClient(RestApiErgoClient.defaultTestnetExplorerUrl).createService(classOf[DefaultApi])
@@ -61,8 +64,8 @@ object UpdateRegistry {
       val registry = registers.get(0)
 
       val tokenMap: PlasmaMap[ErgoNameHash, ErgoId] = RegistrySync.syncRegistry(initialTxId, explorerClient)
-      val ergoname: ErgoNameHash = ErgoName("thirdtest").toErgoNameHash
-      val tokenId: ErgoId = ErgoId.create("4c8ac00a28b198219042af9c03937eecb422b34490d55537366dc9245e85d4e1")
+      val ergoname: ErgoNameHash = ErgoName(ergoNameToRegister).toErgoNameHash
+      val tokenId: ErgoId = ErgoId.create(tokenIdToRegister)
       val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergoname -> tokenId)
       val result: ProvenResult[ErgoId] = tokenMap.insert(ergonameData: _*)
       val opResults: Seq[OpResult[ErgoId]] = result.response
@@ -100,7 +103,9 @@ object UpdateRegistry {
       val signed = prover.sign(tx)
       val txId = signed.toJson(true)
       println(txId)
-      // ctx.sendTransaction(signed)
+      if (serviceMode == "live") {
+        ctx.sendTransaction(signed)
+      }
       txId
     })
     println(txId)

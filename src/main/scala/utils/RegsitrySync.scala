@@ -10,21 +10,27 @@ import org.ergoplatform.appkit._
 import org.ergoplatform.explorer.client.{ExplorerApiClient, DefaultApi}
 import org.ergoplatform.explorer.client.model.OutputInfo
 import org.ergoplatform.ErgoBox
-import org.ergoplatform.restapi.client.Registers
+import org.ergoplatform.restapi.client.{Asset, ErgoTransactionOutput, Registers}
 import special.collection.CollOverArray
 import org.ergoplatform.explorer.client.model.TransactionInfo
+
+import org.ergoplatform.appkit.impl.ScalaBridge
+import java.util
+import scala.collection.JavaConversions._
 
 object RegistrySync {
 
     def syncRegistry(initialTransactionId: String, explorerClient: DefaultApi): PlasmaMap[ErgoNameHash, ErgoId] = {
-        val firstInsertionTransactionId = getFirstSpentTransactionId(initialTransactionId, explorerClient)
-        val registry = syncLoop(firstInsertionTransactionId, explorerClient)
-        registry
+        val initialRegistry = syncInitial()
+        val firstInsertionTransactionid = getFirstSpentTransactionId(initialTransactionId, explorerClient)
+        val registryMap = syncUpdates(firstInsertionTransactionid, explorerClient, initialRegistry)
+        val secMap = syncUpdates("b049092a6dbe55aa1c943e0fc9121a889e7446cfd0b187b6d4a0f6a13fc991da", explorerClient, registryMap)
+        registryMap
     }
 
     def syncInitial(): PlasmaMap[ErgoNameHash, ErgoId] = {
-        val registry = new PlasmaMap[ErgoNameHash, ErgoId](AvlTreeFlags.AllOperationsAllowed, PlasmaParameters.default)
-        return registry
+        val registryMap = new PlasmaMap[ErgoNameHash, ErgoId](AvlTreeFlags.AllOperationsAllowed, PlasmaParameters.default)
+        return registryMap
     }
 
     def getFirstSpentTransactionId(initialTransactionId: String, explorerClient: DefaultApi): String = {
@@ -35,61 +41,41 @@ object RegistrySync {
         spentTransactionId
     }
 
-    def syncLoop(transactionId: String, explorerClient: DefaultApi): PlasmaMap[ErgoNameHash, ErgoId] = {
-        val registry = new PlasmaMap[ErgoNameHash, ErgoId](AvlTreeFlags.AllOperationsAllowed, PlasmaParameters.default)
-        var spentTransactionId = transactionId
-        var lastSpentTransactionId = ""
-        while (spentTransactionId != null) {
-            val transactionInfo = getTransactionInfo(spentTransactionId, explorerClient)
-            val ergoNameHashRegistered = getErgoNameHashRegistered(transactionInfo, explorerClient)
-            val tokenIdRegistered = getTokenIdRegistered(transactionInfo, explorerClient)
-            val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergoNameHashRegistered -> tokenIdRegistered)
-            val result: ProvenResult[ErgoId] = registry.insert(ergonameData: _*)
-
-            lastSpentTransactionId = spentTransactionId
-            spentTransactionId = getSpentTransactionId(transactionInfo)
-            if (lastSpentTransactionId == spentTransactionId) {
-                spentTransactionId = null
-            }
-        }
+    def syncUpdates(spentTransactionId: String, explorerClient: DefaultApi, registry: PlasmaMap[ErgoNameHash, ErgoId]): PlasmaMap[ErgoNameHash, ErgoId] = { 
+        val transactionInfo = explorerClient.getApiV1TransactionsP1(spentTransactionId).execute().body()
+        val transactionOutputs = transactionInfo.getOutputs()
+        val registryBoxId = transactionOutputs.get(0).getBoxId()
+        val registryBox = explorerClient.getApiV1BoxesP1(registryBoxId).execute().body()
+        val registryErgoBoxType = convertOutputInfoToErgoBox(registryBox)
+        val R5_ergoname = registryErgoBoxType.additionalRegisters(ErgoBox.R5).value.asInstanceOf[CollOverArray[Byte]].toArray
+        val ergoname: ErgoNameHash = ErgoNameHash(R5_ergoname)
+        val R6_tokenIdBytes = registryErgoBoxType.additionalRegisters(ErgoBox.R6).value.asInstanceOf[CollOverArray[Byte]].toArray
+        val R6_tokenId = R6_tokenIdBytes.map(_.toByte).map("%02x" format _).mkString
+        val tokenId = ErgoId.create(R6_tokenId)
+        val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergoname -> tokenId)
+        val result: ProvenResult[ErgoId] = registry.insert(ergonameData: _*)
         registry
     }
 
-    def getTransactionInfo(transactionId: String, explorerClient: DefaultApi): TransactionInfo = {
-        val transactionInfo = explorerClient.getApiV1TransactionsP1(transactionId).execute().body()
-        transactionInfo
-    }
-
-    def getBoxInfo(boxId: String, explorerClient: DefaultApi): OutputInfo = {
-        val boxInfo = explorerClient.getApiV1BoxesP1(boxId).execute().body()
-        boxInfo
-    }
-
-    def getSpentTransactionId(transactionInfo: TransactionInfo): String = {
-        val outputZero = transactionInfo.getOutputs().get(0)
-        val spentTransactionId = outputZero.getSpentTransactionId()
-        spentTransactionId
-    }
-
-    def getErgoNameHashRegistered(transactionInfo: TransactionInfo, explorerClient: DefaultApi): ErgoNameHash = {
-        val transactionOutputs = transactionInfo.getOutputs()
-        val registryBoxId = transactionOutputs.get(0).getBoxId()
-        val registryBox: OutputInfo = getBoxInfo(registryBoxId, explorerClient)
-        val registryBoxRegisters = registryBox.getAdditionalRegisters()
-        val R5_ergoname = registryBoxRegisters.get("R5").renderedValue
-        val R5_ergonameBytes = R5_ergoname.getBytes()
-        val ergoname: ErgoNameHash = ErgoNameHash(R5_ergonameBytes)
-        ergoname
-    }
-
-    def getTokenIdRegistered(transactionInfo: TransactionInfo, explorerClient: DefaultApi): ErgoId = {
-        val transactionOutputs = transactionInfo.getOutputs()
-        val registryBoxId = transactionOutputs.get(0).getBoxId()
-        val registryBox: OutputInfo = getBoxInfo(registryBoxId, explorerClient)
-        val registryBoxRegisters = registryBox.getAdditionalRegisters()
-        val R6_tokenId = registryBoxRegisters.get("R6").renderedValue
-        val tokenId = ErgoId.create(R6_tokenId)
-        tokenId
+    def convertOutputInfoToErgoBox(box: OutputInfo): ErgoBox = {
+        val tokens = new util.ArrayList[Asset](box.getAssets.size)
+        for (asset <- box.getAssets) {
+        tokens.add(new Asset().tokenId(asset.getTokenId).amount(asset.getAmount))
+        }
+        val registers = new Registers
+        for (registerEntry <- box.getAdditionalRegisters.entrySet) {
+        registers.put(registerEntry.getKey, registerEntry.getValue.serializedValue)
+        }
+        val boxConversion: ErgoTransactionOutput = new ErgoTransactionOutput()
+            .ergoTree(box.getErgoTree)
+            .boxId(box.getBoxId)
+            .index(box.getIndex)
+            .value(box.getValue)
+            .transactionId(box.getTransactionId)
+            .creationHeight(box.getCreationHeight)
+            .assets(tokens)
+            .additionalRegisters(registers)
+        ScalaBridge.isoErgoTransactionOutput.to(boxConversion)
     }
 
 }
