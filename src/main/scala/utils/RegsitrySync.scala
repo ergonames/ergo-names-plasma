@@ -1,6 +1,7 @@
 package utils
 
 import scenarios.UpdateRegistry.{ErgoNameHash, ErgoName}
+import utils.BoxUtils.convertOutputInfoToErgoBox
 
 import io.getblok.getblok_plasma.{PlasmaParameters, ByteConversion}
 import io.getblok.getblok_plasma.collections.{OpResult, PlasmaMap, Proof, ProvenResult}
@@ -10,13 +11,8 @@ import org.ergoplatform.appkit._
 import org.ergoplatform.explorer.client.{ExplorerApiClient, DefaultApi}
 import org.ergoplatform.explorer.client.model.OutputInfo
 import org.ergoplatform.ErgoBox
-import org.ergoplatform.restapi.client.{Asset, ErgoTransactionOutput, Registers}
 import special.collection.CollOverArray
 import org.ergoplatform.explorer.client.model.TransactionInfo
-
-import org.ergoplatform.appkit.impl.ScalaBridge
-import java.util
-import scala.collection.JavaConversions._
 
 object RegistrySync {
 
@@ -55,27 +51,6 @@ object RegistrySync {
         val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergoname -> tokenId)
         val result: ProvenResult[ErgoId] = registry.insert(ergonameData: _*)
         registry
-    }
-
-    def convertOutputInfoToErgoBox(box: OutputInfo): ErgoBox = {
-        val tokens = new util.ArrayList[Asset](box.getAssets.size)
-        for (asset <- box.getAssets) {
-        tokens.add(new Asset().tokenId(asset.getTokenId).amount(asset.getAmount))
-        }
-        val registers = new Registers
-        for (registerEntry <- box.getAdditionalRegisters.entrySet) {
-        registers.put(registerEntry.getKey, registerEntry.getValue.serializedValue)
-        }
-        val boxConversion: ErgoTransactionOutput = new ErgoTransactionOutput()
-            .ergoTree(box.getErgoTree)
-            .boxId(box.getBoxId)
-            .index(box.getIndex)
-            .value(box.getValue)
-            .transactionId(box.getTransactionId)
-            .creationHeight(box.getCreationHeight)
-            .assets(tokens)
-            .additionalRegisters(registers)
-        ScalaBridge.isoErgoTransactionOutput.to(boxConversion)
     }
 
 }
