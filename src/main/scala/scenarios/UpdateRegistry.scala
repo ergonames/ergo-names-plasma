@@ -60,9 +60,9 @@ object UpdateRegistry {
       val registers = contractBox.getRegisters()
       val registry = registers.get(0)
 
-      val tokenMap: PlasmaMap[ErgoNameHash, ErgoId] = RegistrySync.syncRegistry(initialTxId, explorerClient, ctx)
-      val ergoname: ErgoNameHash = ErgoName("secondtest").toErgoNameHash
-      val tokenId: ErgoId = ErgoId.create("fbbaac7337d051c10fc3da0ccb864f4d32d40027551e1c3ea3ce361f39b91e40")
+      val tokenMap: PlasmaMap[ErgoNameHash, ErgoId] = RegistrySync.syncRegistry(initialTxId, explorerClient)
+      val ergoname: ErgoNameHash = ErgoName("thirdtest").toErgoNameHash
+      val tokenId: ErgoId = ErgoId.create("4c8ac00a28b198219042af9c03937eecb422b34490d55537366dc9245e85d4e1")
       val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergoname -> tokenId)
       val result: ProvenResult[ErgoId] = tokenMap.insert(ergonameData: _*)
       val opResults: Seq[OpResult[ErgoId]] = result.response
@@ -100,7 +100,7 @@ object UpdateRegistry {
       val signed = prover.sign(tx)
       val txId = signed.toJson(true)
       println(txId)
-      ctx.sendTransaction(signed)
+      // ctx.sendTransaction(signed)
       txId
     })
     println(txId)
