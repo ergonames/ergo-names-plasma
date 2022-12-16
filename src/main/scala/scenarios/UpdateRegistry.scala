@@ -56,11 +56,7 @@ object UpdateRegistry {
       val contractAddress = Address.fromErgoTree(compiledContract.getErgoTree, ctx.getNetworkType)
 
       val contractBoxes = ctx.getBoxesById(mostRecentBoxId)
-      var boxesToSpend: java.util.List[InputBox] = new java.util.ArrayList[InputBox]()
-      for (box <- contractBoxes) {
-        boxesToSpend.add(box)
-      }
-      val contractBox = boxesToSpend.get(0)
+      val contractBox = contractBoxes(0)
       val registers = contractBox.getRegisters()
       val registry = registers.get(0)
 
@@ -79,9 +75,17 @@ object UpdateRegistry {
           tokenMap.ergoValue,
           ErgoValue.of(ergoname.hashedName),
           ErgoValue.of(tokenId.getBytes),
-          proof.ergoValue
         )
         .build()
+
+      val boxToSpend = contractBox.withContextVars(
+        ContextVar.of(0.toByte, ErgoValue.of(ergoname.hashedName)),
+        ContextVar.of(1.toByte, ErgoValue.of(tokenId.getBytes)),
+        ContextVar.of(2.toByte, proof.ergoValue),
+      )
+
+      val boxesToSpend: java.util.List[InputBox] = new java.util.ArrayList[InputBox]()
+      boxesToSpend.add(boxToSpend)
 
       val walletBoxes = ctx.getUnspentBoxesFor(senderAddress, 0, 20)
       boxesToSpend.addAll(walletBoxes)
@@ -96,9 +100,8 @@ object UpdateRegistry {
       val signed = prover.sign(tx)
       val txId = signed.toJson(true)
       println(txId)
+      ctx.sendTransaction(signed)
       txId
-      // val txId = ctx.sendTransaction(signed)
-      // txId
     })
     println(txId)
   }

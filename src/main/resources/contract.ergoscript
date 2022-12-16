@@ -1,13 +1,19 @@
 {
     val registry = SELF.R4[AvlTree].get
 
-    val key = INPUTS(0).R5[Coll[Byte]].get
-    val value = INPUTS(0).R6[Coll[Byte]].get
-    val proof = INPUTS(0).R7[Coll[Byte]].get
+    val key = getVar[Coll[Byte]](0).get
+    val value = getVar[Coll[Byte]](1).get
+    val proof = getVar[Coll[Byte]](2).get
     val updatedRegistry = registry.insert(Coll((key, value)), proof).get
 
     val validInsertion = OUTPUTS(0).R4[AvlTree].get.digest == updatedRegistry.digest
     val validScript = OUTPUTS(0).propositionBytes == SELF.propositionBytes
 
-    sigmaProp(validInsertion && validScript)
+    val validRegistersOutput = {
+        val validR5Output = OUTPUTS(0).R5[Coll[Byte]].isDefined
+        val validR6Output = OUTPUTS(0).R6[Coll[Byte]].isDefined
+        validR5Output && validR6Output
+    }
+
+    sigmaProp(validInsertion && validScript && validRegistersOutput)
 }
