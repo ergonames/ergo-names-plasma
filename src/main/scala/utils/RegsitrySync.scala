@@ -17,20 +17,17 @@ import org.ergoplatform.explorer.client.model.TransactionInfo
 object RegistrySync {
 
     def syncRegistry(initialTransactionId: String, explorerClient: DefaultApi): PlasmaMap[ErgoNameHash, ErgoId] = {
-        val initialRegistry = syncInitial()
-        val firstInsertionTransactionid = getFirstSpentTransactionId(initialTransactionId, explorerClient)
-        val registryMap = syncUpdates(firstInsertionTransactionid, explorerClient, initialRegistry)
-        val secMap = syncUpdates("b049092a6dbe55aa1c943e0fc9121a889e7446cfd0b187b6d4a0f6a13fc991da", explorerClient, registryMap)
-        registryMap
+        val registry = new PlasmaMap[ErgoNameHash, ErgoId](AvlTreeFlags.AllOperationsAllowed, PlasmaParameters.default)
+        var spentTransactionId = getBoxSpentTransactionId(initialTransactionId, explorerClient)
+        while (spentTransactionId != null) {
+            syncUpdates(spentTransactionId, explorerClient, registry)
+            spentTransactionId = getBoxSpentTransactionId(spentTransactionId, explorerClient)
+        }
+        registry
     }
 
-    def syncInitial(): PlasmaMap[ErgoNameHash, ErgoId] = {
-        val registryMap = new PlasmaMap[ErgoNameHash, ErgoId](AvlTreeFlags.AllOperationsAllowed, PlasmaParameters.default)
-        return registryMap
-    }
-
-    def getFirstSpentTransactionId(initialTransactionId: String, explorerClient: DefaultApi): String = {
-        val transactionInfo = explorerClient.getApiV1TransactionsP1(initialTransactionId).execute().body()
+    def getBoxSpentTransactionId(transactionId: String, explorerClient: DefaultApi): String = {
+        val transactionInfo = explorerClient.getApiV1TransactionsP1(transactionId).execute().body()
         val transactionOutputs = transactionInfo.getOutputs()
         val registryUpdateOutput = transactionOutputs.get(0)
         val spentTransactionId = registryUpdateOutput.getSpentTransactionId()
