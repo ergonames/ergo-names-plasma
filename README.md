@@ -13,4 +13,4 @@
 - **initialTxId:** The initial transaction ID that created the on chain AvlTree registry.
 - **ergoNameToRegister:** The ErgoName to register is regular text.
 - **tokenIdToRegister:** The token ID to register (same ID that can be found on chain).
-- **serviceMode:** The service mode to run the ErgoNames Plasma service in. Options are `live` or `dry`.
+- **liveMode:** The service mode to run the ErgoNames Plasma service in live mode. Options are `true` or `false`.

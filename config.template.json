@@ -16,6 +16,6 @@
       "initialTxId": "",
       "ergoNameToRegister": "",
       "tokenIdToRegister": "",
-      "serviceMode": ""
+      "liveMode": false
     }
 }

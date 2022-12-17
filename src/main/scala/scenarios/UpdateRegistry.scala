@@ -35,7 +35,11 @@ object UpdateRegistry {
     val initialTxId = configParameters.get("initialTxId")
     val ergoNameToRegister = configParameters.get("ergoNameToRegister")
     val tokenIdToRegister = configParameters.get("tokenIdToRegister")
-    val serviceMode = configParameters.get("serviceMode")
+    val liveModeRaw = configParameters.get("liveMode")
+    var liveMode = false
+    if (liveModeRaw == "true") {
+      liveMode = true
+    }
 
     val ergoClient = RestApiErgoClient.create(nodeConfig, RestApiErgoClient.defaultTestnetExplorerUrl)
     val explorerClient = new ExplorerApiClient(RestApiErgoClient.defaultTestnetExplorerUrl).createService(classOf[DefaultApi])
@@ -104,7 +108,7 @@ object UpdateRegistry {
       val signed = prover.sign(tx)
       val txId = signed.toJson(true)
       println(txId)
-      if (serviceMode == "live") {
+      if (liveMode) {
         ctx.sendTransaction(signed)
       }
       txId
