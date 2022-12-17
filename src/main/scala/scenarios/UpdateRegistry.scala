@@ -33,7 +33,6 @@ object UpdateRegistry {
     val configParameters = toolConfig.getParameters()
     val defaultTestnetExplorerUrl = configParameters.get("defaultTestnetExplorerUrl")
     val initialTxId = configParameters.get("initialTxId")
-    val mostRecentBoxId = configParameters.get("mostRecentBoxId")
     val ergoNameToRegister = configParameters.get("ergoNameToRegister")
     val tokenIdToRegister = configParameters.get("tokenIdToRegister")
     val serviceMode = configParameters.get("serviceMode")
@@ -56,6 +55,9 @@ object UpdateRegistry {
         contract
       )
       val contractAddress = Address.fromErgoTree(compiledContract.getErgoTree, ctx.getNetworkType)
+
+      val mostRecentTransactionId = RegistrySync.getMostRecentTransactionId(initialTxId, explorerClient)
+      val mostRecentBoxId = RegistrySync.getOutputZeroBoxIdFromTransactionId(mostRecentTransactionId, explorerClient)
 
       val contractBoxes = ctx.getBoxesById(mostRecentBoxId)
       val contractBox = contractBoxes(0)

@@ -50,4 +50,24 @@ object RegistrySync {
         registry
     }
 
+    def getMostRecentTransactionId(initialTransactionId: String, explorerClient: DefaultApi): String = {
+       var spentTransactionId = getBoxSpentTransactionId(initialTransactionId, explorerClient)
+       var spentIdToReturn = spentTransactionId
+       while (spentTransactionId != null) {
+        spentTransactionId = getBoxSpentTransactionId(spentTransactionId, explorerClient)
+        if (spentTransactionId != null) {
+            spentIdToReturn = spentTransactionId
+        }
+       }
+       spentIdToReturn
+    }
+
+    def getOutputZeroBoxIdFromTransactionId(transactionId: String, explorerClient: DefaultApi): String = {
+        val transactionInfo = explorerClient.getApiV1TransactionsP1(transactionId).execute().body()
+        val transactionOutputs = transactionInfo.getOutputs()
+        val registryUpdateOutput = transactionOutputs.get(0)
+        val registryBoxId = registryUpdateOutput.getBoxId()
+        registryBoxId
+    }
+
 }
