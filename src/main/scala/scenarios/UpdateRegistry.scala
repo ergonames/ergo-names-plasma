@@ -33,7 +33,6 @@ object UpdateRegistry {
     val configParameters = toolConfig.getParameters()
     val defaultTestnetExplorerUrl = configParameters.get("defaultTestnetExplorerUrl")
     val initialTxId = configParameters.get("initialTxId")
-    val initialBoxId = configParameters.get("initialBoxId")
     val mostRecentBoxId = configParameters.get("mostRecentBoxId")
     val ergoNameToRegister = configParameters.get("ergoNameToRegister")
     val tokenIdToRegister = configParameters.get("tokenIdToRegister")

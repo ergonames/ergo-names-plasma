@@ -11,7 +11,6 @@
 
 - **defaultExplorerApiUrl:** The default explorer API URL to use for the Ergo Explorer API.
 - **initialTxId:** The initial transaction ID that created the on chain AvlTree registry.
-- **initialBoxId:** The initial box ID that created the on chain AvlTree registry.
 - **mostRecentBoxId:** The most recent box ID that updated the on chain AvlTree registry.
 - **ergoNameToRegister:** The ErgoName to register is regular text.
 - **tokenIdToRegister:** The token ID to register (same ID that can be found on chain).
