@@ -28,6 +28,13 @@ object InitializeRegistry {
 
     val toolConfig = ErgoToolConfig.load("config.json")
     val nodeConfig = toolConfig.getNode()
+
+    val configParameters = toolConfig.getParameters()
+    val liveModeRaw = configParameters.get("liveMode")
+    var liveMode = false
+    if (liveModeRaw == "true") {
+      liveMode = true
+    }
     val ergoClient = RestApiErgoClient.create(nodeConfig, RestApiErgoClient.defaultTestnetExplorerUrl)
     val txId = ergoClient.execute((ctx: BlockchainContext) => {
       val prover = ctx.newProverBuilder
@@ -66,7 +73,11 @@ object InitializeRegistry {
         .build()
 
       val signed = prover.sign(tx)
-      val txId = ctx.sendTransaction(signed)
+      val txId = signed.toJson(true)
+      println(txId)
+      if (liveMode) {
+        ctx.sendTransaction(signed)
+      }
       txId
     })
     println(txId)

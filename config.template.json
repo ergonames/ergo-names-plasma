@@ -14,8 +14,8 @@
     "parameters": {
       "defaultExplorerApiUrl": "",
       "initialTxId": "",
-      "ergoNameToRegister": "",
       "tokenIdToRegister": "",
+      "ergoNameToRegister": "",
       "liveMode": false
     }
 }
