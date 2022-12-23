@@ -1,0 +1,48 @@
+/*
+
+ErgoNames Minting Contract
+
+========== Context Variables ==========
+
+0 - ergonameHash - Coll[Byte] - hash of the name to register
+1 - proof - Coll[Byte] - proof ergonameHash and tokenId insertion into the registry
+2 - nameToRegister - Coll[Byte] - name to register
+3 - receiverAddress - Coll[Byte] - address of the receiver
+
+========== OUTPUTS ==========
+
+0 - mintBox - Box - new ErgoName token box sent to the receiver address specified in the context variables
+1 - updatedRegistryBox - Box - registry box with updated registry
+
+*/
+
+{
+    val registry = SELF.R4[AvlTree].get
+    
+    val tokenIdToRegister = SELF.id
+
+    val ergonameHash = getVar[Coll[Byte]](0).get
+    val proof = getVar[Coll[Byte]](1).get
+    val nameToRegister = getVar[Coll[Byte]](2).get
+    val receiverAddress = getVar[Coll[Byte]](3).get
+
+    val mintBox = OUTPUTS(0)
+    val updatedRegistryBox = OUTPUTS(1)
+
+    val newErgoNameToken = mintBox.tokens(0)
+
+    val mintNewErgoName = {
+        val validErgoNameTokenId = newErgoNameToken._1 == tokenIdToRegister
+        val validErgoNameTokenAmount = newErgoNameToken._2 == 1
+        val validErgoNameName = mintBox.R4[Coll[Byte]].get == nameToRegister
+        val validReceiver = mintBox.propositionBytes == receiverAddress
+
+        val updatedRegistry = registry.insert(Coll((ergonameHash, tokenIdToRegister)), proof).get
+        val validRegistryUpdate = updatedRegistryBox.R4[AvlTree].get.digest == updatedRegistry.digest
+        val validScript = updatedRegistryBox.propositionBytes == SELF.propositionBytes
+
+        validErgoNameTokenId && validErgoNameTokenAmount && validErgoNameName && validReceiver && validRegistryUpdate && validScript
+    }
+
+    sigmaProp(mintNewErgoName)
+}

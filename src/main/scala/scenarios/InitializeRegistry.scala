@@ -24,7 +24,7 @@ object InitializeRegistry {
   }
 
   def main(args: Array[String]): Unit = {
-    val contract = ErgoScriptContract("src/main/resources/contract.ergoscript").loadContract()
+    val contract = ErgoScriptContract("src/main/resources/MintingContract.ergoscript").loadContract()
 
     val toolConfig = ErgoToolConfig.load("config.json")
     val nodeConfig = toolConfig.getNode()
@@ -74,7 +74,6 @@ object InitializeRegistry {
 
       val signed = prover.sign(tx)
       val txId = signed.toJson(true)
-      println(txId)
       if (liveMode) {
         ctx.sendTransaction(signed)
       }

@@ -25,7 +25,7 @@ object UpdateRegistry {
   }
 
   def main(args: Array[String]): Unit = {
-    val contract = ErgoScriptContract("src/main/resources/contract.ergoscript").loadContract()
+    val contract = ErgoScriptContract("src/main/resources/MintingContract.ergoscript").loadContract()
 
     val toolConfig = ErgoToolConfig.load("config.json")
     val nodeConfig = toolConfig.getNode()
@@ -34,7 +34,6 @@ object UpdateRegistry {
     val defaultTestnetExplorerUrl = configParameters.get("defaultTestnetExplorerUrl")
     val initialTxId = configParameters.get("initialTxId")
     val ergoNameToRegister = configParameters.get("ergoNameToRegister")
-    val tokenIdToRegister = configParameters.get("tokenIdToRegister")
     val liveModeRaw = configParameters.get("liveMode")
     var liveMode = false
     if (liveModeRaw == "true") {
@@ -70,44 +69,50 @@ object UpdateRegistry {
 
       val tokenMap: PlasmaMap[ErgoNameHash, ErgoId] = RegistrySync.syncRegistry(initialTxId, explorerClient)
       val ergoname: ErgoNameHash = ErgoName(ergoNameToRegister).toErgoNameHash
-      val tokenId: ErgoId = ErgoId.create(tokenIdToRegister)
+      val tokenId: ErgoId = contractBox.getId()
       val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergoname -> tokenId)
       val result: ProvenResult[ErgoId] = tokenMap.insert(ergonameData: _*)
       val opResults: Seq[OpResult[ErgoId]] = result.response
       val proof: Proof = result.proof
+
+      val contractBoxWithContextVars = contractBox.withContextVars(
+        ContextVar.of(0.toByte, ErgoValue.of(ergoname.hashedName)),
+        ContextVar.of(1.toByte, proof.ergoValue),
+        ContextVar.of(2.toByte, ergoNameToRegister.getBytes),
+        ContextVar.of(3.toByte, ErgoValue.of(senderAddress.getErgoAddress.script.bytes))
+      )
       
-      val outBox = ctx.newTxBuilder.outBoxBuilder
+      val tokenToMint = new Eip4Token(tokenId.toString(), 1L, ergoNameToRegister, "test ergoname token", 0)
+
+      val mintOutputBox = ctx.newTxBuilder.outBoxBuilder
+        .value(Parameters.MinChangeValue)
+        .contract(senderAddress.toErgoContract())
+        .mintToken(tokenToMint)
+        .build()
+
+      val registryOutputBox = ctx.newTxBuilder().outBoxBuilder
         .value(Parameters.MinChangeValue)
         .contract(compiledContract)
         .registers(
-          tokenMap.ergoValue,
-          ErgoValue.of(ergoname.hashedName),
-          ErgoValue.of(tokenId.getBytes),
+          tokenMap.ergoValue
         )
         .build()
 
-      val boxToSpend = contractBox.withContextVars(
-        ContextVar.of(0.toByte, ErgoValue.of(ergoname.hashedName)),
-        ContextVar.of(1.toByte, ErgoValue.of(tokenId.getBytes)),
-        ContextVar.of(2.toByte, proof.ergoValue),
-      )
-
       val boxesToSpend: java.util.List[InputBox] = new java.util.ArrayList[InputBox]()
-      boxesToSpend.add(boxToSpend)
 
       val walletBoxes = ctx.getUnspentBoxesFor(senderAddress, 0, 20)
+      boxesToSpend.add(contractBoxWithContextVars)
       boxesToSpend.addAll(walletBoxes)
       
       val tx = ctx.newTxBuilder
         .boxesToSpend(boxesToSpend)
-        .outputs(outBox)
+        .outputs(mintOutputBox, registryOutputBox)
         .fee(Parameters.MinFee)
         .sendChangeTo(senderAddress.getErgoAddress())
         .build()
 
       val signed = prover.sign(tx)
       val txId = signed.toJson(true)
-      println(txId)
       if (liveMode) {
         ctx.sendTransaction(signed)
       }

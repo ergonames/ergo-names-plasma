@@ -17,13 +17,31 @@ import org.ergoplatform.explorer.client.model.TransactionInfo
 object RegistrySync {
 
     def syncRegistry(initialTransactionId: String, explorerClient: DefaultApi): PlasmaMap[ErgoNameHash, ErgoId] = {
-        val registry = new PlasmaMap[ErgoNameHash, ErgoId](AvlTreeFlags.AllOperationsAllowed, PlasmaParameters.default)
+        val registry = syncEmptyRegistry()
+        val isEmpty = checkIfRegistryIsEmpty(initialTransactionId, explorerClient)
+        if (isEmpty) {
+            return registry
+        }
         var spentTransactionId = getBoxSpentTransactionId(initialTransactionId, explorerClient)
         while (spentTransactionId != null) {
             syncUpdates(spentTransactionId, explorerClient, registry)
             spentTransactionId = getBoxSpentTransactionId(spentTransactionId, explorerClient)
         }
         registry
+    }
+
+    def syncEmptyRegistry(): PlasmaMap[ErgoNameHash, ErgoId] = {
+        val registry = new PlasmaMap[ErgoNameHash, ErgoId](AvlTreeFlags.AllOperationsAllowed, PlasmaParameters.default)
+        registry
+    }
+
+    def checkIfRegistryIsEmpty(initialTransactionId: String, explorerClient: DefaultApi): Boolean = {
+        val spentTransactionId = getBoxSpentTransactionId(initialTransactionId, explorerClient)
+        if (spentTransactionId == null) {
+            true
+        } else {
+            false
+        }
     }
 
     def getBoxSpentTransactionId(transactionId: String, explorerClient: DefaultApi): String = {
