@@ -24,7 +24,10 @@ object RegistrySync {
         }
         var spentTransactionId = getBoxSpentTransactionId(initialTransactionId, explorerClient)
         while (spentTransactionId != null) {
-            syncUpdates(spentTransactionId, explorerClient, registry)
+            val ergonameHash = getErgoNameHash(spentTransactionId, explorerClient)
+            val tokenId = getTokenId(spentTransactionId, explorerClient)
+            val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergonameHash -> tokenId)
+            val result: ProvenResult[ErgoId] = registry.insert(ergonameData: _*)
             spentTransactionId = getBoxSpentTransactionId(spentTransactionId, explorerClient)
         }
         registry
@@ -52,20 +55,29 @@ object RegistrySync {
         spentTransactionId
     }
 
-    def syncUpdates(spentTransactionId: String, explorerClient: DefaultApi, registry: PlasmaMap[ErgoNameHash, ErgoId]): PlasmaMap[ErgoNameHash, ErgoId] = { 
+    def getErgoNameHash(spentTransactionId: String, explorerClient: DefaultApi): ErgoNameHash = {
         val transactionInfo = explorerClient.getApiV1TransactionsP1(spentTransactionId).execute().body()
         val transactionOutputs = transactionInfo.getOutputs()
-        val registryBoxId = transactionOutputs.get(0).getBoxId()
-        val registryBox = explorerClient.getApiV1BoxesP1(registryBoxId).execute().body()
-        val registryErgoBoxType = convertOutputInfoToErgoBox(registryBox)
-        val R5_ergoname = registryErgoBoxType.additionalRegisters(ErgoBox.R5).value.asInstanceOf[CollOverArray[Byte]].toArray
-        val ergoname: ErgoNameHash = ErgoNameHash(R5_ergoname)
-        val R6_tokenIdBytes = registryErgoBoxType.additionalRegisters(ErgoBox.R6).value.asInstanceOf[CollOverArray[Byte]].toArray
-        val R6_tokenId = R6_tokenIdBytes.map(_.toByte).map("%02x" format _).mkString
-        val tokenId = ErgoId.create(R6_tokenId)
-        val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergoname -> tokenId)
-        val result: ProvenResult[ErgoId] = registry.insert(ergonameData: _*)
-        registry
+        val mintBoxId = transactionOutputs.get(0).getBoxId()
+        val mintBox = explorerClient.getApiV1BoxesP1(mintBoxId).execute().body()
+        val mintBoxType = convertOutputInfoToErgoBox(mintBox)
+        val ergonameNameRaw = mintBoxType.additionalRegisters(ErgoBox.R4).value.asInstanceOf[CollOverArray[Byte]].toArray
+        val ergonameNameBase16 = ergonameNameRaw.map(_.toByte).map("%02x" format _).mkString
+        val ergonameName = new String(ergonameNameBase16.sliding(2, 2).toArray.map(Integer.parseInt(_, 16).toByte))
+        val ergoname: ErgoNameHash = ErgoName(ergonameName).toErgoNameHash
+        ergoname
+    }
+
+    def getTokenId(spentTransactionId: String, explorerClient: DefaultApi): ErgoId = {
+        val transactionInfo = explorerClient.getApiV1TransactionsP1(spentTransactionId).execute().body()
+        val transactionOutputs = transactionInfo.getOutputs()
+        val mintBoxId = transactionOutputs.get(0).getBoxId()
+        val mintBox = explorerClient.getApiV1BoxesP1(mintBoxId).execute().body()
+        val mintBoxType = convertOutputInfoToErgoBox(mintBox)
+        val tokenIdRaw = mintBoxType.additionalTokens(0)._1.repr
+        val tokenIdStr = tokenIdRaw.map(_.toByte).map("%02x" format _).mkString
+        val tokenId = ErgoId.create(tokenIdStr)
+        tokenId
     }
 
     def getMostRecentTransactionId(initialTransactionId: String, explorerClient: DefaultApi): String = {
@@ -83,13 +95,13 @@ object RegistrySync {
         spentIdToReturn
     }
 
-    def getOutputZeroBoxIdFromTransactionId(transactionId: String, explorerClient: DefaultApi): String = {
+    def getOutputOneBoxIdFromTransactionId(transactionId: String, explorerClient: DefaultApi): String = {
         if (transactionId == null) {
             return null
         }
         val transactionInfo = explorerClient.getApiV1TransactionsP1(transactionId).execute().body()
         val transactionOutputs = transactionInfo.getOutputs()
-        val registryUpdateOutput = transactionOutputs.get(0)
+        val registryUpdateOutput = transactionOutputs.get(1)
         val registryBoxId = registryUpdateOutput.getBoxId()
         registryBoxId
     }
