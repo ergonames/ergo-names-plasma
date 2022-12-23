@@ -1,6 +1,7 @@
 package scenarios
 
 import utils.{ErgoScriptContract, RegistrySync}
+import types.{ErgoName, ErgoNameHash}
 
 import io.getblok.getblok_plasma.{PlasmaParameters, ByteConversion}
 import io.getblok.getblok_plasma.collections.{OpResult, PlasmaMap, Proof, ProvenResult}
@@ -11,18 +12,6 @@ import scorex.crypto.hash.Blake2b256
 import org.ergoplatform.explorer.client.{ExplorerApiClient, DefaultApi}
 
 object UpdateRegistry {
-
-  case class ErgoName(name: String) {
-    def toErgoNameHash: ErgoNameHash = ErgoNameHash(Blake2b256.hash(name.getBytes("UTF-8")))
-  }
-
-  case class ErgoNameHash(hashedName: Array[Byte])
-
-  implicit val nameConversion: ByteConversion[ErgoNameHash] = new ByteConversion[ErgoNameHash] {    
-    override def convertToBytes(t: ErgoNameHash): Array[Byte] = t.hashedName
-
-    override def convertFromBytes(bytes: Array[Byte]): ErgoNameHash = ErgoNameHash(bytes)
-  }
 
   def main(args: Array[String]): Unit = {
     val contract = ErgoScriptContract("src/main/resources/MintingContract.ergoscript").loadContract()

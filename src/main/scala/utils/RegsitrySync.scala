@@ -1,6 +1,6 @@
 package utils
 
-import scenarios.UpdateRegistry.{ErgoNameHash, ErgoName}
+import types.{ErgoName, ErgoNameHash}
 import utils.BoxUtils.convertOutputInfoToErgoBox
 
 import io.getblok.getblok_plasma.{PlasmaParameters, ByteConversion}
