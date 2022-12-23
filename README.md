@@ -1,5 +1,4 @@
 # ErgoNames Plasma
-###### MVP Implementation of the ErgoNames Backend Service
 
 ### Current Status
 
@@ -12,3 +11,21 @@
 - **initialTxId:** The initial transaction ID that created the on chain AvlTree registry.
 - **ergoNameToRegister:** The ErgoName to register is regular text.
 - **liveMode:** The service mode to run the ErgoNames Plasma service in live mode. Options are `true` or `false`.
+
+### Roadmap
+
+- [ ] Minting Contract
+  - [X] Allow for updating registry
+  - [X] Mint new token
+  - [ ] Price checking
+  - [ ] Correct payment destination
+  - [ ] Refunds allows
+- [ ] Proxy Contract
+  - [ ] Ensure equal miner fee is used across all transactions
+- [ ] Sync Engine
+  - [X] Sync using explorer API
+  - [ ] Sync using Ergo node API
+  - [ ] Store data in local database
+- [ ] Minting Information
+  - [X] Mint new ErgoName NFT
+  - [ ] Correct price paid
