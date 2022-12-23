@@ -1,5 +1,5 @@
 # ErgoNames Plasma
-###### Proof of Concept Plasma Implementation
+###### MVP Implementation of the ErgoNames Backend Service
 
 ### Current Status
 
