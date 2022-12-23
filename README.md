@@ -29,3 +29,6 @@
 - [ ] Minting Information
   - [X] Mint new ErgoName NFT
   - [ ] Correct price paid
+- [ ] System
+  - [ ] Run as daemon
+  - [ ] Dockerize service
