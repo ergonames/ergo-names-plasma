@@ -60,7 +60,13 @@ object UpdateRegistry {
       val contractAddress = Address.fromErgoTree(compiledContract.getErgoTree, ctx.getNetworkType)
 
       val mostRecentTransactionId = RegistrySync.getMostRecentTransactionId(initialTxId, explorerClient)
-      val mostRecentBoxId = RegistrySync.getOutputOneBoxIdFromTransactionId(mostRecentTransactionId, explorerClient)
+      val registryEmpty = RegistrySync.checkIfRegistryIsEmpty(initialTxId, explorerClient)
+      var mostRecentBoxId = ""
+      if (registryEmpty) {
+        mostRecentBoxId = RegistrySync.getOutputZeroBoxIdFromTransactionId(mostRecentTransactionId, explorerClient)
+      } else {
+        mostRecentBoxId = RegistrySync.getOutputOneBoxIdFromTransactionId(mostRecentTransactionId, explorerClient)
+      }
 
       val contractBoxes = ctx.getBoxesById(mostRecentBoxId)
       val contractBox = contractBoxes(0)
@@ -79,7 +85,6 @@ object UpdateRegistry {
         ContextVar.of(0.toByte, ErgoValue.of(ergoname.hashedName)),
         ContextVar.of(1.toByte, proof.ergoValue),
         ContextVar.of(2.toByte, ergoNameToRegister.getBytes),
-        ContextVar.of(3.toByte, ErgoValue.of(senderAddress.getErgoAddress.script.bytes))
       )
       
       val tokenToMint = new Eip4Token(tokenId.toString(), 1L, ergoNameToRegister, "test ergoname token", 0)

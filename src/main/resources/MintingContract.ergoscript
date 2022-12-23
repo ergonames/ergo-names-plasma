@@ -7,7 +7,6 @@ ErgoNames Minting Contract
 0 - ergonameHash - Coll[Byte] - hash of the name to register
 1 - proof - Coll[Byte] - proof ergonameHash and tokenId insertion into the registry
 2 - nameToRegister - Coll[Byte] - name to register
-3 - receiverAddress - Coll[Byte] - address of the receiver
 
 ========== OUTPUTS ==========
 
@@ -24,7 +23,9 @@ ErgoNames Minting Contract
     val ergonameHash = getVar[Coll[Byte]](0).get
     val proof = getVar[Coll[Byte]](1).get
     val nameToRegister = getVar[Coll[Byte]](2).get
-    val receiverAddress = getVar[Coll[Byte]](3).get
+
+    val inputBoxFromUser = INPUTS(1)
+    val receiverAddress = inputBoxFromUser.propositionBytes
 
     val mintBox = OUTPUTS(0)
     val updatedRegistryBox = OUTPUTS(1)

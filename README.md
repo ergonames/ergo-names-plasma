@@ -3,8 +3,8 @@
 
 ### Current Status
 
-- **Initial Transaction Id:** `254524888bc8c8139e9d23547b2b333788ddda919f0a5cbdcd9e2d60c71f1911`
-- **Contract Address:** `3tjbBtbkD2v98BEX7W4eiFogm2aFdehNp6CRuuF8f3kSTQoyydTuSAEp7RxEj7jfQdeCvDJ6xqoVa5RhYQ5BLPVGKbmqJFiWaucxxEY5Nui8JJPNGTatKkUp1yjAQgxA3vMpJHkqH6Ng1VBTWvWNhj4B4yz9B6SD4E8Riuw3WvAppBBES9m`
+- **Initial Transaction Id:** `d55409dc8823b8c2a69196f6fb8715e2ed7ab637f4fc8b668624a8a92e5550a9`
+- **Contract Address:** `KvbWcSgBPVS6DNrcUMm2A8mS3swQb9oXz3e3bjqivn6ENTaASF5N6jut2KYrmaUDk21qryvWihSX5njfbFfs8ELxFawW5Y57tUtEEo1MoriZsHCgxBSURJCgJQfH7wzM1V8ssNYuuKxEtsGtLz5BN2HzcdbZqSxKefaZZ4iqCTtrpPD7dKBYatUm`
 
 ### Configuration File Parameters
 

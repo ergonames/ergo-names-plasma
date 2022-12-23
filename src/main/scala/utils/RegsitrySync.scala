@@ -95,6 +95,17 @@ object RegistrySync {
         spentIdToReturn
     }
 
+    def getOutputZeroBoxIdFromTransactionId(transactionId: String, explorerClient: DefaultApi): String = {
+        if (transactionId == null) {
+            return null
+        }
+        val transactionInfo = explorerClient.getApiV1TransactionsP1(transactionId).execute().body()
+        val transactionOutputs = transactionInfo.getOutputs()
+        val registryUpdateOutput = transactionOutputs.get(0)
+        val registryBoxId = registryUpdateOutput.getBoxId()
+        registryBoxId
+    }
+
     def getOutputOneBoxIdFromTransactionId(transactionId: String, explorerClient: DefaultApi): String = {
         if (transactionId == null) {
             return null
