@@ -1,6 +1,6 @@
 package scenarios
 
-import utils.{ErgoScriptContract, RegistrySync}
+import utils.{ErgoScriptContract, RegistrySyncEngine}
 import types.{ErgoName, ErgoNameHash}
 
 import io.getblok.getblok_plasma.{PlasmaParameters, ByteConversion}
@@ -48,13 +48,13 @@ object UpdateRegistry {
       )
       val contractAddress = Address.fromErgoTree(compiledContract.getErgoTree, ctx.getNetworkType)
 
-      val mostRecentTransactionId = RegistrySync.getMostRecentTransactionId(initialTxId, explorerClient)
-      val registryEmpty = RegistrySync.checkIfRegistryIsEmpty(initialTxId, explorerClient)
+      val mostRecentTransactionId = RegistrySyncEngine.getMostRecentTransactionId(initialTxId, explorerClient)
+      val registryEmpty = RegistrySyncEngine.checkIfRegistryIsEmpty(initialTxId, explorerClient)
       var mostRecentBoxId = ""
       if (registryEmpty) {
-        mostRecentBoxId = RegistrySync.getOutputZeroBoxIdFromTransactionId(mostRecentTransactionId, explorerClient)
+        mostRecentBoxId = RegistrySyncEngine.getOutputZeroBoxIdFromTransactionId(mostRecentTransactionId, explorerClient)
       } else {
-        mostRecentBoxId = RegistrySync.getOutputOneBoxIdFromTransactionId(mostRecentTransactionId, explorerClient)
+        mostRecentBoxId = RegistrySyncEngine.getOutputOneBoxIdFromTransactionId(mostRecentTransactionId, explorerClient)
       }
 
       val contractBoxes = ctx.getBoxesById(mostRecentBoxId)
@@ -62,7 +62,7 @@ object UpdateRegistry {
       val registers = contractBox.getRegisters()
       val registry = registers.get(0)
 
-      val tokenMap: PlasmaMap[ErgoNameHash, ErgoId] = RegistrySync.syncRegistry(initialTxId, explorerClient)
+      val tokenMap: PlasmaMap[ErgoNameHash, ErgoId] = RegistrySyncEngine.syncFromLocal()
       val ergoname: ErgoNameHash = ErgoName(ergoNameToRegister).toErgoNameHash
       val tokenId: ErgoId = contractBox.getId()
       val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergoname -> tokenId)

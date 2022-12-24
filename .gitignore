@@ -11,3 +11,5 @@ project/target/
 project/project/
 
 config.json
+
+db/
