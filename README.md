@@ -25,7 +25,7 @@
 - [ ] Sync Engine
   - [X] Sync using explorer API
   - [ ] Sync using Ergo node API
-  - [ ] Store data in local database
+  - [X] Store data in local database
 - [ ] Minting Information
   - [X] Mint new ErgoName NFT
   - [ ] Correct price paid
