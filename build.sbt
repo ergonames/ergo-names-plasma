@@ -7,7 +7,8 @@ version := "0.0.1"
 libraryDependencies ++= Seq(
     "org.scala-lang.modules" %% "scala-parser-combinators" % "2.1.1",
     "io.github.getblok-io" % "getblok_plasma_2.12" % "1.0.0",
-    "org.scalaj" %% "scalaj-http" % "2.4.2"
+    "org.scalaj" %% "scalaj-http" % "2.4.2",
+    "org.iq80.leveldb" % "leveldb" % "0.12"
 )
 
 dependencyOverrides += "org.ergoplatform" %% "ergo-appkit" % "ac116c85-SNAPSHOT"
