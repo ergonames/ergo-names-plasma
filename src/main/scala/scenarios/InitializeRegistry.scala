@@ -13,6 +13,10 @@ import scorex.crypto.hash.Blake2b256
 object InitializeRegistry {
 
   def main(args: Array[String]): Unit = {
+    initializeRegistryScenario("config.json")
+  }
+
+  def initializeRegistryScenario(configFilePath: String) {
     val contract = ErgoScriptContract("src/main/resources/MintingContract.ergoscript").loadContract()
 
     val toolConfig = ErgoToolConfig.load("config.json")

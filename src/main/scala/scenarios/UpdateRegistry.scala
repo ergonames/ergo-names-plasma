@@ -14,6 +14,10 @@ import org.ergoplatform.explorer.client.{ExplorerApiClient, DefaultApi}
 object UpdateRegistry {
 
   def main(args: Array[String]): Unit = {
+    updateRegistryScenario("config.json")
+  }
+
+  def updateRegistryScenario(configFilePath: String) {
     val contract = ErgoScriptContract("src/main/resources/MintingContract.ergoscript").loadContract()
 
     val toolConfig = ErgoToolConfig.load("config.json")

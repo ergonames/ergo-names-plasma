@@ -13,6 +13,10 @@ import types.RegistrationInfo
 object SyncRegistry {
 
     def main(args: Array[String]): Unit = {
+        syncRegistryScenario("config.json")
+    }
+
+    def syncRegistryScenario(configFilePath: String) {
         val toolConfig = ErgoToolConfig.load("config.json")
         val configParameters = toolConfig.getParameters()
         val initialTransactionId = configParameters.get("initialTxId")
