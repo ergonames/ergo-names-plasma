@@ -20,12 +20,12 @@ ErgoNames Minting Contract
     
     val tokenIdToRegister = SELF.id
 
+    val inputBoxFromUser = INPUTS(1)
+
     val ergonameHash = getVar[Coll[Byte]](0).get
     val proof = getVar[Coll[Byte]](1).get
-    val nameToRegister = getVar[Coll[Byte]](2).get
-
-    val inputBoxFromUser = INPUTS(1)
-    val receiverAddress = inputBoxFromUser.propositionBytes
+    val nameToRegister = inputBoxFromUser.R4[Coll[Byte]].get
+    val receiverAddress = inputBoxFromUser.R5[Coll[Byte]].get
 
     val mintBox = OUTPUTS(0)
     val updatedRegistryBox = OUTPUTS(1)

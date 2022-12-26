@@ -1,0 +1,52 @@
+*/
+
+ErgoNames Proxy Contract
+
+========== Constants ==========
+
+mintContractPropositionBytes - proposition bytes of ErgoNames mint contract
+
+========== Registers ==========
+
+4 - nameToRegister - Coll[Byte] - name of ErgoName to register
+5 - receiverAddress - Coll[Byte] - proposition bytes of receiver
+
+========== OUTPUTS ==========
+
+0 = mintRequestBox - Box - box that will be spent from mint contract
+
+*/
+
+{
+    val minimumTransactionFee = 1000000
+
+    val inputBoxFromMintContract = INPUTS(0)
+    val successorBox = OUTPUTS(0)
+
+    val validRegisters = {
+        val validR4Input = inputBoxFromUser.R4[Coll[Byte]].isDefined
+        val validR4Output = successorBox.R4[Coll[Byte]].isDefined
+
+        val validR5Output = successorBox.R5[Coll[Byte]] == inputBoxFromUser.propositionBytes
+
+        validR4Input && validR4Output
+    }
+
+    val validOutputBox = {
+        val validAmount = successorBox.value == inputBoxFromUser.value - minimumTransactionFee
+        val validScript = successorBox.propositionBytes == mintContractPropositionBytes
+
+        validAmount && validScript
+    }
+
+    val mintRequest = {
+        validRegisters && validOutputBox
+    }
+
+    val issueRefund = {
+        // TODO ***** UNSAFE *****
+        1==1
+    }
+
+    sigmaProp(mintRequest || issueRefund)
+}
