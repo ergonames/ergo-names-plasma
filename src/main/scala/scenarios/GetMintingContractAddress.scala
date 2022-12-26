@@ -5,13 +5,13 @@ import utils.ErgoScriptContract
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
 
-object GetContractAddress {
+object GetMintingContractAddress {
 
     def main(args: Array[String]): Unit = {
-        getContractAddressScenario("config.json")
+        getMintingContractAddressScenario("config.json")
     }
 
-    def getContractAddressScenario(configFilePath: String) {
+    def getMintingContractAddressScenario(configFilePath: String) {
         val contract = ErgoScriptContract("src/main/resources/MintingContract.ergoscript").loadContract()
 
         val toolConfig = ErgoToolConfig.load(configFilePath)
