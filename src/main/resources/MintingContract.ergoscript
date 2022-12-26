@@ -6,7 +6,6 @@ ErgoNames Minting Contract
 
 0 - ergonameHash - Coll[Byte] - hash of the name to register
 1 - proof - Coll[Byte] - proof ergonameHash and tokenId insertion into the registry
-2 - nameToRegister - Coll[Byte] - name to register
 
 ========== OUTPUTS ==========
 
