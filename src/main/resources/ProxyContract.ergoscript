@@ -43,10 +43,5 @@ mintContractPropositionBytes - proposition bytes of ErgoNames mint contract
         validRegisters && validOutputBox
     }
 
-    val issueRefund = {
-        // TODO ***** UNSAFE *****
-        1==1
-    }
-
-    sigmaProp(mintRequest || issueRefund)
+    sigmaProp(mintRequest)
 }
