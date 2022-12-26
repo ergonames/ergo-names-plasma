@@ -8,17 +8,18 @@ import org.ergoplatform.appkit.config.ErgoToolConfig
 object GetProxyContractAddress {
 
     def main(args: Array[String]): Unit = {
-        getProxyContractAddressScenario("config.json")
+        val address = getProxyContractAddressScenario("config.json")
+        println("Proxy Contract Address: " + address)
     }
 
-    def getProxyContractAddressScenario(configFilePath: String) {
+    def getProxyContractAddressScenario(configFilePath: String): Address = {
         val proxyContract = ErgoScriptContract("src/main/resources/ProxyContract.ergoscript").loadContract()
         val mintContract = ErgoScriptContract("src/main/resources/MintingContract.ergoscript").loadContract()
 
         val toolConfig = ErgoToolConfig.load(configFilePath)
         val nodeConfig = toolConfig.getNode()
         val ergoClient = RestApiErgoClient.create(nodeConfig, RestApiErgoClient.defaultMainnetExplorerUrl)
-        val addr = ergoClient.execute((ctx: BlockchainContext) => {
+        val contractAddress = ergoClient.execute((ctx: BlockchainContext) => {
             val compiledMintContract = ctx.compileContract(
                 ConstantsBuilder.empty(),
                 mintContract
@@ -36,6 +37,6 @@ object GetProxyContractAddress {
             val contractAddress = Address.fromErgoTree(compiledProxyContract.getErgoTree, ctx.getNetworkType)
             contractAddress
         })
-        println("Contract Address: " + addr)
+        contractAddress
     }
 }

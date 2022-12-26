@@ -8,16 +8,17 @@ import org.ergoplatform.appkit.config.ErgoToolConfig
 object GetMintingContractAddress {
 
     def main(args: Array[String]): Unit = {
-        getMintingContractAddressScenario("config.json")
+        val address = getMintingContractAddressScenario("config.json")
+        println("Minting Contract Address: " + address)
     }
 
-    def getMintingContractAddressScenario(configFilePath: String) {
+    def getMintingContractAddressScenario(configFilePath: String): Address = {
         val contract = ErgoScriptContract("src/main/resources/MintingContract.ergoscript").loadContract()
 
         val toolConfig = ErgoToolConfig.load(configFilePath)
         val nodeConfig = toolConfig.getNode()
         val ergoClient = RestApiErgoClient.create(nodeConfig, RestApiErgoClient.defaultMainnetExplorerUrl)
-        val addr = ergoClient.execute((ctx: BlockchainContext) => {
+        val contractAddress = ergoClient.execute((ctx: BlockchainContext) => {
             val compiledContract = ctx.compileContract(
             ConstantsBuilder.empty(),
             contract
@@ -25,6 +26,6 @@ object GetMintingContractAddress {
             val contractAddress = Address.fromErgoTree(compiledContract.getErgoTree, ctx.getNetworkType)
             contractAddress
         })
-        println("Contract Address: " + addr)
+        contractAddress
     }
 }

@@ -14,10 +14,11 @@ import org.ergoplatform.explorer.client.{ExplorerApiClient, DefaultApi}
 object SubmitMintRequest {
 
     def main(args: Array[String]): Unit = {
-        submitMintRequestScenario("config.json")
+        val txInfo = submitMintRequestScenario("config.json")
+        println(txInfo)
     }
 
-    def submitMintRequestScenario(configFilePath: String) {
+    def submitMintRequestScenario(configFilePath: String): String = {
         val proxyContract = ErgoScriptContract("src/main/resources/ProxyContract.ergoscript").loadContract()
         val mintContract = ErgoScriptContract("src/main/resources/MintingContract.ergoscript").loadContract()
 
@@ -90,6 +91,6 @@ object SubmitMintRequest {
             }
             txId
         })
-        println(txId)
+        txId
     }
 }
