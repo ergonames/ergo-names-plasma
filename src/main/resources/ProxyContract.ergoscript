@@ -1,4 +1,4 @@
-*/
+/*
 
 ErgoNames Proxy Contract
 
@@ -20,16 +20,14 @@ mintContractPropositionBytes - proposition bytes of ErgoNames mint contract
 {
     val minimumTransactionFee = 1000000
 
-    val inputBoxFromMintContract = INPUTS(0)
+    val inputBoxFromUser = INPUTS(0)
     val successorBox = OUTPUTS(0)
 
     val validRegisters = {
-        val validR4Input = inputBoxFromUser.R4[Coll[Byte]].isDefined
         val validR4Output = successorBox.R4[Coll[Byte]].isDefined
+        val validR5Output = successorBox.R5[Coll[Byte]].get == inputBoxFromUser.propositionBytes
 
-        val validR5Output = successorBox.R5[Coll[Byte]] == inputBoxFromUser.propositionBytes
-
-        validR4Input && validR4Output
+        validR4Output && validR5Output
     }
 
     val validOutputBox = {
