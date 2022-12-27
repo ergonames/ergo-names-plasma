@@ -15,11 +15,13 @@ ErgoNames Minting Contract
 */
 
 {
-    val registry = SELF.R4[AvlTree].get
-    
-    val tokenIdToRegister = SELF.id
-
+    val registryInputBox = INPUTS(0)
     val inputBoxFromUser = INPUTS(1)
+
+    val registry = registryInputBox.R4[AvlTree].get
+    
+    val tokenIdToRegister = registryInputBox.id
+
 
     val ergonameHash = getVar[Coll[Byte]](0).get
     val proof = getVar[Coll[Byte]](1).get
@@ -39,7 +41,7 @@ ErgoNames Minting Contract
 
         val updatedRegistry = registry.insert(Coll((ergonameHash, tokenIdToRegister)), proof).get
         val validRegistryUpdate = updatedRegistryBox.R4[AvlTree].get.digest == updatedRegistry.digest
-        val validScript = updatedRegistryBox.propositionBytes == SELF.propositionBytes
+        val validScript = updatedRegistryBox.propositionBytes == registryInputBox.propositionBytes
 
         validErgoNameTokenId && validErgoNameTokenAmount && validErgoNameName && validReceiver && validRegistryUpdate && validScript
     }
