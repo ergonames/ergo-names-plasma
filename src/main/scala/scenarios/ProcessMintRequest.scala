@@ -15,7 +15,7 @@ import special.collection.Coll
 object ProcessMintRequest {
 
   def main(args: Array[String]): Unit = {
-      val proxyBoxToSpendId = "e2f4589b352110b883a7decdef25a9906a8b9d7635c1d5b387332eb4ad008c96"
+      val proxyBoxToSpendId = "71651c4869ffd997244d7ba15e7cd1b84633f126f0db22906caed4a816011c9e"
       val txInfo = processMintRequestScenario("config.json", proxyBoxToSpendId)
       println(txInfo)
   }
@@ -94,11 +94,8 @@ object ProcessMintRequest {
       )
 
       val boxesToSpend: java.util.List[InputBox] = new java.util.ArrayList[InputBox]()
-
-      val walletBoxes = ctx.getUnspentBoxesFor(senderAddress, 0, 20)
       boxesToSpend.add(contractBoxWithContextVars)
       boxesToSpend.add(proxyBox)
-      boxesToSpend.addAll(walletBoxes)
       
       val tokenToMint = new Eip4Token(tokenId.toString(), 1L, ergoNameToRegister, "test ergoname token", 0)
 
