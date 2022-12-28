@@ -16,7 +16,7 @@ import sigmastate.serialization.ErgoTreeSerializer
 object ProcessMintRequest {
 
   def main(args: Array[String]): Unit = {
-      val proxyBoxToSpendId = "df3a242f0762c7da13ce10b29d89f3582753504b0efe1d8606212580e87ffa6a"
+      val proxyBoxToSpendId = "b5048d2c70e100f2587af50f02b052d758e9f09484d7c7ad2eed256c487315be"
       val txInfo = processMintRequestScenario("config.json", proxyBoxToSpendId)
       println(txInfo)
   }

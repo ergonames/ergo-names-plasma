@@ -24,9 +24,8 @@ ErgoNames Minting Contract
 
     val ergonameHash = getVar[Coll[Byte]](0).get
     val proof = getVar[Coll[Byte]](1).get
-    val nameToRegister = getVar[Coll[Byte]](2).get
-    // userInputBox.R4[Coll[Byte]].get
-    // val receiverAddress = userInputBox.R5[Coll[Byte]].get
+    val nameToRegister = userInputBox.R4[Coll[Byte]].get
+    val receiverAddress = userInputBox.R5[Coll[Byte]].get
 
     val mintBox = OUTPUTS(0)
     val updatedRegistryBox = OUTPUTS(1)
@@ -37,10 +36,9 @@ ErgoNames Minting Contract
         val validErgoNameTokenId = newErgoNameToken._1 == tokenIdToRegister
         val validErgoNameTokenAmount = newErgoNameToken._2 == 1
         val validErgoNameName = mintBox.R4[Coll[Byte]].get == nameToRegister
-        // val validReceiver = mintBox.propositionBytes == receiverAddress
+        val validReceiver = mintBox.propositionBytes == receiverAddress
 
-        validErgoNameTokenId && validErgoNameTokenAmount && validErgoNameName 
-        // && validReceiver
+        validErgoNameTokenId && validErgoNameTokenAmount && validErgoNameName && validReceiver
     }
 
     val updateRegistry = {

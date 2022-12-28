@@ -2,8 +2,8 @@
 
 ### Current Status (Subject to change)
 
-- **Initial Transaction Id:** `5850648970f3da6358ce26e9bbe1223e58b4afc395ade5a180e70158a2fb75e3`
-- **Mint Contract Address:** `tUZbxGJzvgicP5iADDWd4fGTfhQKGvPjZEEtwSuQFDXLxbaoC1JeGjuQLsPvq2urV8Pmcp5RNhGr2xPGbFSWCeEgVJuSTkf7JgC2eW5iRoEpsZZQBGz83JG9Xfzi2cHKPZYgx1FotLYHpP9oqVevT5GKE3UcKedNDLzgJY`
+- **Initial Transaction Id:** `237ec829703605ba7383b8aa6d77d66e375bee0bca58889be17f09d820cb4b70`
+- **Mint Contract Address:** `24fZfBxxFZYG6ErBfvit6VhzwagencNc2mVwnHugTA5yA78tLvfTPsEz8AucKAEwJarwT9N1mtfxLnWD8WchdQdxr3su3MszYXSniUpUf3T13rXRBRTdx4qUimoGJhGPYASjrqaR4V6SnkpkkHkp62onP5fPbNfxdQbuo3uCVmmBQd6Xt3t8NEEVHFqNrCVT1pp4q`
 - **Proxy Contract Address:** `Ms7smJwLGbUAjuWQ`
 
 Disclaimer: Current proxy contract is completely unsafe. Current code is `sigmaProp(1==1)`
