@@ -25,9 +25,8 @@ object GetProxyContractAddress {
                 mintContract
             )
             val mintContractAddress = Address.fromErgoTree(compiledMintContract.getErgoTree, ctx.getNetworkType)
-            val mintContractPropositionBytes = mintContractAddress.toPropositionBytes()
             val proxyContractConstats = ConstantsBuilder.create()
-                .item("mintContractPropositionBytes", mintContractPropositionBytes)
+                .item("mintContractScript", mintContractAddress.toString())
                 .build()
             
             val compiledProxyContract = ctx.compileContract(

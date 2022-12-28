@@ -4,7 +4,7 @@ ErgoNames Proxy Contract
 
 ========== Constants ==========
 
-mintContractPropositionBytes - proposition bytes of ErgoNames mint contract
+mintContractScript - String of mint contract address
 
 ========== Registers ==========
 
@@ -25,14 +25,14 @@ mintContractPropositionBytes - proposition bytes of ErgoNames mint contract
 
     val validRegisters = {
         val validR4Output = successorBox.R4[Coll[Byte]].isDefined
-        val validR5Output = successorBox.R5[Coll[Byte]].get == inputBoxFromUser.propositionBytes
+        val validR5Output = successorBox.R5[Coll[Byte]].isDefined
 
         validR4Output && validR5Output
     }
 
     val validOutputBox = {
         val validAmount = successorBox.value == inputBoxFromUser.value - minimumTransactionFee
-        val validScript = successorBox.propositionBytes == mintContractPropositionBytes
+        val validScript = blake2b256(successorBox.propositionBytes) == fromBase58(mintContractScript)
 
         validAmount && validScript
     }
@@ -41,5 +41,9 @@ mintContractPropositionBytes - proposition bytes of ErgoNames mint contract
         validRegisters && validOutputBox
     }
 
-    sigmaProp(mintRequest)
+    val alwaysTrue = {
+        1==1
+    }
+
+    sigmaProp(alwaysTrue)
 }

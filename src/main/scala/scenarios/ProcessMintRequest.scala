@@ -11,11 +11,12 @@ import sigmastate.AvlTreeFlags
 import scorex.crypto.hash.Blake2b256
 import org.ergoplatform.explorer.client.{ExplorerApiClient, DefaultApi}
 import special.collection.Coll
+import sigmastate.serialization.ErgoTreeSerializer
 
 object ProcessMintRequest {
 
   def main(args: Array[String]): Unit = {
-      val proxyBoxToSpendId = "71651c4869ffd997244d7ba15e7cd1b84633f126f0db22906caed4a816011c9e"
+      val proxyBoxToSpendId = "df3a242f0762c7da13ce10b29d89f3582753504b0efe1d8606212580e87ffa6a"
       val txInfo = processMintRequestScenario("config.json", proxyBoxToSpendId)
       println(txInfo)
   }
@@ -77,8 +78,9 @@ object ProcessMintRequest {
       val ergonameToRegisterBytes = proxyBoxErgoNameRaw.getValue.asInstanceOf[Coll[Byte]].toArray
       val ergoNameToRegister = new String(ergonameToRegisterBytes)
 
-      val proxyBoxReceiverAddressBytes = proxyBoxReceiverAddressRaw.getValue.asInstanceOf[Coll[Byte]].toArray
-      val proxyBoxReceiverAddress = Address.fromPropositionBytes(ctx.getNetworkType(), proxyBoxReceiverAddressBytes)
+      val proxyBoxReceiverAddressBytesRaw = proxyBoxReceiverAddressRaw.getValue.asInstanceOf[Coll[Byte]].toArray
+      val proxyBoxReceiverAddressBytes = ErgoTreeSerializer.DefaultSerializer.deserializeErgoTree(proxyBoxReceiverAddressBytesRaw)
+      val proxyBoxReceiverAddress = Address.fromErgoTree(proxyBoxReceiverAddressBytes, ctx.getNetworkType)
 
       val tokenMap: PlasmaMap[ErgoNameHash, ErgoId] = RegistrySyncEngine.syncFromLocal()
       val ergoname: ErgoNameHash = ErgoName(ergoNameToRegister).toErgoNameHash
@@ -90,7 +92,8 @@ object ProcessMintRequest {
 
       val contractBoxWithContextVars = contractBox.withContextVars(
         ContextVar.of(0.toByte, ErgoValue.of(ergoname.hashedName)),
-        ContextVar.of(1.toByte, proof.ergoValue)
+        ContextVar.of(1.toByte, proof.ergoValue),
+        ContextVar.of(2.toByte, ergoNameToRegister.getBytes())
       )
 
       val boxesToSpend: java.util.List[InputBox] = new java.util.ArrayList[InputBox]()

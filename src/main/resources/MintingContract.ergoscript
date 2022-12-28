@@ -15,18 +15,18 @@ ErgoNames Minting Contract
 */
 
 {
-    val registryInputBox = INPUTS(0)
-    val inputBoxFromUser = INPUTS(1)
+    val registryInputBox = SELF
+    val userInputBox = INPUTS(1)
 
     val registry = registryInputBox.R4[AvlTree].get
     
     val tokenIdToRegister = registryInputBox.id
 
-
     val ergonameHash = getVar[Coll[Byte]](0).get
     val proof = getVar[Coll[Byte]](1).get
-    val nameToRegister = inputBoxFromUser.R4[Coll[Byte]].get
-    val receiverAddress = inputBoxFromUser.R5[Coll[Byte]].get
+    val nameToRegister = getVar[Coll[Byte]](2).get
+    // userInputBox.R4[Coll[Byte]].get
+    // val receiverAddress = userInputBox.R5[Coll[Byte]].get
 
     val mintBox = OUTPUTS(0)
     val updatedRegistryBox = OUTPUTS(1)
@@ -37,14 +37,23 @@ ErgoNames Minting Contract
         val validErgoNameTokenId = newErgoNameToken._1 == tokenIdToRegister
         val validErgoNameTokenAmount = newErgoNameToken._2 == 1
         val validErgoNameName = mintBox.R4[Coll[Byte]].get == nameToRegister
-        val validReceiver = mintBox.propositionBytes == receiverAddress
+        // val validReceiver = mintBox.propositionBytes == receiverAddress
 
+        validErgoNameTokenId && validErgoNameTokenAmount && validErgoNameName 
+        // && validReceiver
+    }
+
+    val updateRegistry = {
         val updatedRegistry = registry.insert(Coll((ergonameHash, tokenIdToRegister)), proof).get
         val validRegistryUpdate = updatedRegistryBox.R4[AvlTree].get.digest == updatedRegistry.digest
         val validScript = updatedRegistryBox.propositionBytes == registryInputBox.propositionBytes
 
-        validErgoNameTokenId && validErgoNameTokenAmount && validErgoNameName && validReceiver && validRegistryUpdate && validScript
+        validRegistryUpdate && validScript
     }
 
-    sigmaProp(mintNewErgoName)
+    val validRegistration = {
+        mintNewErgoName && updateRegistry
+    }
+
+    sigmaProp(validRegistration)
 }

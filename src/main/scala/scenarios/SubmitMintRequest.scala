@@ -53,10 +53,9 @@ object SubmitMintRequest {
                 mintContract
             )
             val mintContractAddress = Address.fromErgoTree(compiledMintContract.getErgoTree, ctx.getNetworkType)
-            val mintContractPropBytes = mintContractAddress.toPropositionBytes()
 
             val proxyContractConstants = ConstantsBuilder.create()
-                .item("mintContractPropositionBytes", mintContractPropBytes)
+                .item("mintContractScript", mintContractAddress.toString())
                 .build()
 
             val compiledProxyContract = ctx.compileContract(
@@ -73,7 +72,7 @@ object SubmitMintRequest {
                 .contract(compiledProxyContract)
                 .registers(
                     ErgoValue.of(ergoNameToRegister.getBytes()),
-                    ErgoValue.of(senderAddress.toPropositionBytes())
+                    ErgoValue.of(senderAddress.getErgoAddress().script.bytes)
                 )
                 .build()
 

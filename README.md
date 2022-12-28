@@ -1,10 +1,12 @@
 # ErgoNames Plasma
 
-### Current Status
+### Current Status (Subject to change)
 
-- **Initial Transaction Id:** `d5dbcf3c96eac9257d8ab840a2c6cf1c2cf5d17543fe2f1fa89a6f98b4a76106`
-- **Mint Contract Address:** `24fZfBxxFZYG6ErBfvit6VhzwagencNc2mVwnHugTA5yA78tLvfTPsEz8AucKAEwJarwT9N1mtfxMWWcq3s71sUSK1HGteZkHbYdCATFHYLDr9LJw9p4ZdGH8xUBp7NHLeP2ZyNSEpANvqt8rzLayKYrS74pFnbxm3mRDFk6oGAbCXirGEaZGhHTSk9mzHgFxwVjC`
-- **Proxy Contract Address:** `fyUVBXH65Y9SsiXzwnmU7GHhzEZUht5inZ9ZJ4d6vq5Z16DVLxfzBv46mfQtZZ1ZWRxhjCMzk61V8EFwzVbqr6anx7s63NiotqHWkWxBaHJrs2RC42XPhPRfixkihSNwarjoJjVtCQUR3UxUCmR9oWCCZ9bDSyoU79V6ohnvh3XJKWsA2ZsrnoYsrH84m51fCDQUvCseFivV9WTdjKzSog9ZmHoWv3JrTxcL5XMHfUAraG4fPajd5VxCcbmXAWtDuNnB3h75ip143nweHDyqnCf6vSXJk8jZwW1QauBCnYMNy2GX`
+- **Initial Transaction Id:** `5850648970f3da6358ce26e9bbe1223e58b4afc395ade5a180e70158a2fb75e3`
+- **Mint Contract Address:** `tUZbxGJzvgicP5iADDWd4fGTfhQKGvPjZEEtwSuQFDXLxbaoC1JeGjuQLsPvq2urV8Pmcp5RNhGr2xPGbFSWCeEgVJuSTkf7JgC2eW5iRoEpsZZQBGz83JG9Xfzi2cHKPZYgx1FotLYHpP9oqVevT5GKE3UcKedNDLzgJY`
+- **Proxy Contract Address:** `Ms7smJwLGbUAjuWQ`
+
+Disclaimer: Current proxy contract is completely unsafe. Current code is `sigmaProp(1==1)`
 
 ### Configuration File Parameters
 
