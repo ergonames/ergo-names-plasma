@@ -17,11 +17,11 @@ object ProcessMintRequest {
 
   def main(args: Array[String]): Unit = {
       val proxyBoxToSpendId = "0c3bac578d467863b71b10474d99ce816df19c32513b40cd0f06a5674dac3b48"
-      val txInfo = processMintRequestScenario("config.json", proxyBoxToSpendId)
+      val txInfo = processMintRequestScenario("config.json")
       println(txInfo)
   }
 
-  def processMintRequestScenario(configFilePath: String, proxyBoxToSpendId: String): String = {
+  def processMintRequestScenario(configFilePath: String): String = {
     val contract = ErgoScriptContract("src/main/resources/MintingContract.ergoscript").loadContract()
 
     val toolConfig = ErgoToolConfig.load("config.json")
@@ -30,6 +30,7 @@ object ProcessMintRequest {
     val configParameters = toolConfig.getParameters()
     val defaultTestnetExplorerUrl = configParameters.get("defaultTestnetExplorerUrl")
     val initialTxId = configParameters.get("initialTxId")
+    val proxyBoxToSpendId = configParameters.get("proxyBoxToSpendId")
     val liveModeRaw = configParameters.get("liveMode")
     var liveMode = false
     if (liveModeRaw == "true") {
