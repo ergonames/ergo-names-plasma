@@ -2,7 +2,7 @@ scalaVersion := "2.12.16"
 
 name := "ergo-names-plasma"
 organization := "io.ergonames"
-version := "0.0.1"
+version := "0.0.2"
 
 libraryDependencies ++= Seq(
     "org.scala-lang.modules" %% "scala-parser-combinators" % "2.1.1",
