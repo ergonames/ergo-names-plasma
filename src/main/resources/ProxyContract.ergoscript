@@ -1,0 +1,41 @@
+/*
+
+ErgoNames Proxy Contract
+
+========== Constants ==========
+
+mintContractScript - base58 encoding of mint contract ergo tree hex string
+
+========== Registers ==========
+
+4 - nameToRegister - Coll[Byte] - name of ErgoName to register
+5 - receiverAddress - Coll[Byte] - proposition bytes of receiver
+
+========== OUTPUTS ==========
+
+0 = mintRequestBox - Box - box that will be spent from mint contract
+
+*/
+
+{
+    val successorBox = OUTPUTS(0)
+
+    // TODO: FIX THIS. UNSECURE SCRIPT
+    val validScript = {
+        1==1
+    }
+
+    val validRegisters = {
+        val validR4 = successorBox.R4[Coll[Byte]].isDefined
+        val validR5 = successorBox.R5[Coll[Byte]].get == INPUTS(0).propositionBytes
+
+        validR4
+    }
+    
+    val validAmount = {
+        val sameAmount = successorBox.value == INPUTS(0).value
+        sameAmount
+    }
+
+    sigmaProp(validScript && validRegisters && validAmount)
+}

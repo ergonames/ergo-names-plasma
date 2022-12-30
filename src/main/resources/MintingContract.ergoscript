@@ -6,7 +6,6 @@ ErgoNames Minting Contract
 
 0 - ergonameHash - Coll[Byte] - hash of the name to register
 1 - proof - Coll[Byte] - proof ergonameHash and tokenId insertion into the registry
-2 - nameToRegister - Coll[Byte] - name to register
 
 ========== OUTPUTS ==========
 
@@ -16,16 +15,17 @@ ErgoNames Minting Contract
 */
 
 {
-    val registry = SELF.R4[AvlTree].get
+    val registryInputBox = SELF
+    val userInputBox = INPUTS(1)
+
+    val registry = registryInputBox.R4[AvlTree].get
     
-    val tokenIdToRegister = SELF.id
+    val tokenIdToRegister = registryInputBox.id
 
     val ergonameHash = getVar[Coll[Byte]](0).get
     val proof = getVar[Coll[Byte]](1).get
-    val nameToRegister = getVar[Coll[Byte]](2).get
-
-    val inputBoxFromUser = INPUTS(1)
-    val receiverAddress = inputBoxFromUser.propositionBytes
+    val nameToRegister = userInputBox.R4[Coll[Byte]].get
+    val receiverAddress = userInputBox.R5[Coll[Byte]].get
 
     val mintBox = OUTPUTS(0)
     val updatedRegistryBox = OUTPUTS(1)
@@ -38,12 +38,20 @@ ErgoNames Minting Contract
         val validErgoNameName = mintBox.R4[Coll[Byte]].get == nameToRegister
         val validReceiver = mintBox.propositionBytes == receiverAddress
 
-        val updatedRegistry = registry.insert(Coll((ergonameHash, tokenIdToRegister)), proof).get
-        val validRegistryUpdate = updatedRegistryBox.R4[AvlTree].get.digest == updatedRegistry.digest
-        val validScript = updatedRegistryBox.propositionBytes == SELF.propositionBytes
-
-        validErgoNameTokenId && validErgoNameTokenAmount && validErgoNameName && validReceiver && validRegistryUpdate && validScript
+        validErgoNameTokenId && validErgoNameTokenAmount && validErgoNameName && validReceiver
     }
 
-    sigmaProp(mintNewErgoName)
+    val updateRegistry = {
+        val updatedRegistry = registry.insert(Coll((ergonameHash, tokenIdToRegister)), proof).get
+        val validRegistryUpdate = updatedRegistryBox.R4[AvlTree].get.digest == updatedRegistry.digest
+        val validScript = updatedRegistryBox.propositionBytes == registryInputBox.propositionBytes
+
+        validRegistryUpdate && validScript
+    }
+
+    val validRegistration = {
+        mintNewErgoName && updateRegistry
+    }
+
+    sigmaProp(validRegistration)
 }
