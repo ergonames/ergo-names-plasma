@@ -24,7 +24,9 @@ Disclaimer: Current proxy contract is completely unsafe. The funds deposited int
   - [ ] Correct payment destination
   - [ ] Refunds allows
 - [ ] Proxy Contract
-  - [ ] Ensure equal miner fee is used across all transactions
+  - [X] Ensure equal miner fee is used across all transactions
+  - [ ] Ensure funds are sent to mint contract
+  - [X] Ensure registers are set correctly
 - [ ] Sync Engine
   - [X] Sync using explorer API
   - [ ] Sync using Ergo node API
