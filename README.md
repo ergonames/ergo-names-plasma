@@ -2,11 +2,11 @@
 
 ### Current Status (Subject to change)
 
-- **Initial Transaction Id:** `237ec829703605ba7383b8aa6d77d66e375bee0bca58889be17f09d820cb4b70`
+- **Initial Transaction Id:** `e271e7cb9b9c7932546e8a5746c91cb1c0f1114ff173a90e1fe979170f71c579`
 - **Mint Contract Address:** `24fZfBxxFZYG6ErBfvit6VhzwagencNc2mVwnHugTA5yA78tLvfTPsEz8AucKAEwJarwT9N1mtfxLnWD8WchdQdxr3su3MszYXSniUpUf3T13rXRBRTdx4qUimoGJhGPYASjrqaR4V6SnkpkkHkp62onP5fPbNfxdQbuo3uCVmmBQd6Xt3t8NEEVHFqNrCVT1pp4q`
-- **Proxy Contract Address:** `Ms7smJwLGbUAjuWQ`
+- **Proxy Contract Address:** `2QSobRecPvrMVpdNVdqiEcDjCoZYyMCXRwh8cA8M5qx3rwiuQA5bifAzghk`
 
-Disclaimer: Current proxy contract is completely unsafe. Current code is `sigmaProp(1==1)`
+Disclaimer: Current proxy contract is completely unsafe. The funds deposited into the contract can be sent to any address.
 
 ### Configuration File Parameters
 

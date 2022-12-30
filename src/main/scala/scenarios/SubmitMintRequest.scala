@@ -10,6 +10,9 @@ import org.ergoplatform.appkit.config.ErgoToolConfig
 import sigmastate.AvlTreeFlags
 import scorex.crypto.hash.Blake2b256
 import org.ergoplatform.explorer.client.{ExplorerApiClient, DefaultApi}
+import scorex.util.encode.Base58
+import sigmastate.serialization.ErgoTreeSerializer
+import scorex.util.encode.Base64
 
 object SubmitMintRequest {
 
@@ -48,18 +51,8 @@ object SubmitMintRequest {
 
             val senderAddress = prover.getEip3Addresses().get(0)
 
-            val compiledMintContract = ctx.compileContract(
-                ConstantsBuilder.empty(),
-                mintContract
-            )
-            val mintContractAddress = Address.fromErgoTree(compiledMintContract.getErgoTree, ctx.getNetworkType)
-
-            val proxyContractConstants = ConstantsBuilder.create()
-                .item("mintContractScript", mintContractAddress.toString())
-                .build()
-
             val compiledProxyContract = ctx.compileContract(
-                proxyContractConstants,
+                ConstantsBuilder.empty(),
                 proxyContract
             )
 

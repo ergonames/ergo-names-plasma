@@ -17,7 +17,7 @@ object GetMintingContractAddress {
 
         val toolConfig = ErgoToolConfig.load(configFilePath)
         val nodeConfig = toolConfig.getNode()
-        val ergoClient = RestApiErgoClient.create(nodeConfig, RestApiErgoClient.defaultMainnetExplorerUrl)
+        val ergoClient = RestApiErgoClient.create(nodeConfig, RestApiErgoClient.defaultTestnetExplorerUrl)
         val contractAddress = ergoClient.execute((ctx: BlockchainContext) => {
             val compiledContract = ctx.compileContract(
             ConstantsBuilder.empty(),

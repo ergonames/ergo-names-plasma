@@ -4,6 +4,10 @@ import utils.ErgoScriptContract
 
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.config.ErgoToolConfig
+import scorex.crypto.hash.Blake2b256
+import scorex.util.encode.Base58
+import sigmastate.serialization.ErgoTreeSerializer
+import scorex.util.encode.Base64
 
 object GetProxyContractAddress {
 
@@ -18,19 +22,15 @@ object GetProxyContractAddress {
 
         val toolConfig = ErgoToolConfig.load(configFilePath)
         val nodeConfig = toolConfig.getNode()
-        val ergoClient = RestApiErgoClient.create(nodeConfig, RestApiErgoClient.defaultMainnetExplorerUrl)
+        val ergoClient = RestApiErgoClient.create(nodeConfig, RestApiErgoClient.defaultTestnetExplorerUrl)
         val contractAddress = ergoClient.execute((ctx: BlockchainContext) => {
             val compiledMintContract = ctx.compileContract(
                 ConstantsBuilder.empty(),
                 mintContract
             )
-            val mintContractAddress = Address.fromErgoTree(compiledMintContract.getErgoTree, ctx.getNetworkType)
-            val proxyContractConstats = ConstantsBuilder.create()
-                .item("mintContractScript", mintContractAddress.toString())
-                .build()
-            
+
             val compiledProxyContract = ctx.compileContract(
-                proxyContractConstats,
+                ConstantsBuilder.empty(),
                 proxyContract
             )
             val contractAddress = Address.fromErgoTree(compiledProxyContract.getErgoTree, ctx.getNetworkType)
