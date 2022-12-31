@@ -14,31 +14,6 @@ struct MintInformation {
     ergoname_token_id: String,
 }
 
-impl MintInformation {
-
-    fn to_bytes(&self) -> Vec<u8> {
-        let mut bytes: Vec<u8> = Vec::new();
-        bytes.extend_from_slice(self.mint_transaction_id.as_bytes());
-        bytes.extend_from_slice(self.spent_transaction_id.as_bytes());
-        bytes.extend_from_slice(self.ergoname_registered.as_bytes());
-        bytes.extend_from_slice(self.ergoname_token_id.as_bytes());
-        bytes
-    }
-
-    fn from_bytes(bytes: &[u8]) -> MintInformation {
-        let mint_transaction_id: String = String::from_utf8(bytes[0..64].to_vec()).unwrap();
-        let spent_transaction_id: String = String::from_utf8(bytes[64..128].to_vec()).unwrap();
-        let ergoname_registered: String = String::from_utf8(bytes[128..192].to_vec()).unwrap();
-        let ergoname_token_id: String = String::from_utf8(bytes[192..256].to_vec()).unwrap();
-        MintInformation {
-            mint_transaction_id,
-            spent_transaction_id,
-            ergoname_registered,
-            ergoname_token_id,
-        }
-    }
-}
-
 fn main() {
     create_database_schema();
     let initial_transaction_id: &str = "d55409dc8823b8c2a69196f6fb8715e2ed7ab637f4fc8b668624a8a92e5550a9";
@@ -54,12 +29,6 @@ fn main() {
         write_to_database(mint_information.clone());
         spend_transaction_id = mint_information.spent_transaction_id.clone();
     }
-
-
-    // let db = DB::open_default("db").unwrap();
-    // let first_insertion_transaction_bytes = db.get(initial_transaction_id.as_bytes()).unwrap().unwrap();
-    // let first_insertion_transaction = String::from_utf8(first_insertion_transaction_bytes).unwrap();
-    // println!("{}", first_insertion_transaction);
 }
 
 fn get_first_insertion_transaction(initial_transaction_id: &str) -> Result<String> {
