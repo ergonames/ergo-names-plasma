@@ -2,7 +2,7 @@ package utils
 
 import types.{ErgoName, ErgoNameHash, RegistrationInfo}
 import utils.BoxUtils.convertOutputInfoToErgoBox
-import utils.DatabaseUtils.{readFromDatabase, getTotalKeys}
+import utils.DatabaseUtils.{readFromDatabase}
 
 import io.getblok.getblok_plasma.{PlasmaParameters, ByteConversion}
 import io.getblok.getblok_plasma.collections.{OpResult, PlasmaMap, Proof, ProvenResult}
@@ -19,14 +19,6 @@ object RegistrySyncEngine {
 
     def syncFromLocal(): PlasmaMap[ErgoNameHash, ErgoId] = {
         val registry = syncEmptyRegistry()
-        val totalKeys = getTotalKeys()
-        for (i <- 1 to totalKeys) {
-            val registrationInfo = readFromDatabase(i)
-            val ergonameHash = registrationInfo.ergoNameHash
-            val tokenId = registrationInfo.tokenId
-            val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergonameHash -> tokenId)
-            val result: ProvenResult[ErgoId] = registry.insert(ergonameData: _*)
-        }
         registry
     }
 

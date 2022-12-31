@@ -37,3 +37,11 @@ Disclaimer: Current proxy contract is completely unsafe. The funds deposited int
 - [ ] System
   - [ ] Run as daemon
   - [ ] Dockerize service
+
+### Running Services
+
+###### Local Database Setup
+
+```
+docker run --name ergonames-local-db -e POSTGRES_USER=ergonames -e POSTGRES_PASSWORD=ergonames -p 5432:5432 -v /db:/var/lib/postgresql/data -d postgres
+```

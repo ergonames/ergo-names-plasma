@@ -1,9 +1,10 @@
 use anyhow::{Result};
+use postgres::{Client, NoTls};
 use reqwest::blocking::Response;
-use rocksdb::{DB};
 use serde_json::Value;
 use sigma_util::hash::blake2b256_hash;
 
+const DATABASE_PATH: &str = "postgresql://ergonames:ergonames@localhost:5432/postgres";
 
 #[derive(Clone, Debug)]
 struct MintInformation {
@@ -39,6 +40,7 @@ impl MintInformation {
 }
 
 fn main() {
+    create_database_schema();
     let initial_transaction_id: &str = "d55409dc8823b8c2a69196f6fb8715e2ed7ab637f4fc8b668624a8a92e5550a9";
     let first_insertion_transaction: Result<String> = get_first_insertion_transaction(initial_transaction_id);
     if first_insertion_transaction.is_err() {
@@ -112,20 +114,45 @@ fn parse_transaction_data(transaction_id: String) -> MintInformation {
 }
 
 fn write_inital(initial_transaction_id: &str, first_insertion_transaction: &str) {
-    let db = DB::open_default("db").unwrap();
-    db.put(initial_transaction_id.as_bytes(), first_insertion_transaction.as_bytes()).unwrap();
+    let mut database: postgres::Client = connect_to_database().unwrap();
+    database.execute("
+        INSERT INTO registration (mint_transaction_id, spent_transaction_id, ergoname_registered, ergoname_token_id)
+        VALUES ($1, $2, $3, $4)
+    ", &[
+        &initial_transaction_id,
+        &first_insertion_transaction,
+        &"0000000000000000000000000000000000000000000000000000000000000000",
+        &"0000000000000000000000000000000000000000000000000000000000000000",
+    ]).unwrap();
 }
 
 fn write_to_database(mint_information: MintInformation) {
-    let db = DB::open_default("db").unwrap();
-    db.put(mint_information.mint_transaction_id.as_bytes(), mint_information.to_bytes()).unwrap();
-    match db.get(mint_information.mint_transaction_id.as_bytes()) {
-        Ok(Some(value)) => {
-            let mint_information: MintInformation = MintInformation::from_bytes(&value);
-            println!("Mint Information: {:?}", mint_information);
-        }
-        Ok(None) => println!("No value found"),
-        Err(e) => println!("Operational problem encountered: {}", e),
-    }
-    db.delete(mint_information.mint_transaction_id.as_bytes()).unwrap();
+    let mut database: postgres::Client = connect_to_database().unwrap();
+    database.execute("
+        INSERT INTO registration (mint_transaction_id, spent_transaction_id, ergoname_registered, ergoname_token_id)
+        VALUES ($1, $2, $3, $4)
+    ", &[
+        &mint_information.mint_transaction_id,
+        &mint_information.spent_transaction_id,
+        &mint_information.ergoname_registered,
+        &mint_information.ergoname_token_id,
+    ]).unwrap();
+}
+
+fn connect_to_database() -> Result<postgres::Client> {
+    let client = Client::connect(DATABASE_PATH, NoTls)?;
+    return Ok(client);
+}
+
+fn create_database_schema() {
+    let mut database: postgres::Client = connect_to_database().unwrap();
+    database.batch_execute("
+        CREATE TABLE IF NOT EXISTS registration (
+            id SERIAL PRIMARY KEY,
+            mint_transaction_id VARCHAR(64) NOT NULL,
+            spent_transaction_id VARCHAR(64) NOT NULL,
+            ergoname_registered VARCHAR(64) NOT NULL,
+            ergoname_token_id VARCHAR(64) NOT NULL
+        );
+    ").unwrap();
 }
