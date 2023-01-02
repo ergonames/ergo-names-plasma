@@ -21,11 +21,12 @@ object RegistrySyncEngine {
         val registry = syncEmptyRegistry()
         var registrationInfo = readFromDatabase(initialTransactionId)
         var spentTransactionId = registrationInfo.spentTransactionId
-        if (spentTransactionId != null) {
-            registrationInfo = readFromDatabase(spentTransactionId)
+        registrationInfo = readFromDatabase(spentTransactionId)
+        while (registrationInfo != null) {
             val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(registrationInfo.ergonameRegistered -> registrationInfo.ergonameTokenId)
             val result: ProvenResult[ErgoId] = registry.insert(ergonameData: _*)
             spentTransactionId = registrationInfo.spentTransactionId
+            registrationInfo = readFromDatabase(spentTransactionId)
         }
         registry
     }
