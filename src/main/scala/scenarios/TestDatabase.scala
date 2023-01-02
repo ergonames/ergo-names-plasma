@@ -1,14 +1,15 @@
 package scenarios
 
-import org.rocksdb._
+import java.sql.{Connection, DriverManager, ResultSet}
 import utils.DatabaseUtils
 
 object TestDatabase {
 
     def main(args: Array[String]): Unit = {
-        val initialTransactionId = "d55409dc8823b8c2a69196f6fb8715e2ed7ab637f4fc8b668624a8a92e5550a9"
-        val db = RocksDB.open(DatabaseUtils.getDatabaseOptions(), DatabaseUtils.getDatabasePath())
-        val info = DatabaseUtils.readFromDatabase(initialTransactionId)
-        println(info)
+        val initialTransactionId = "e271e7cb9b9c7932546e8a5746c91cb1c0f1114ff173a90e1fe979170f71c579"
+        val registrationInfo = DatabaseUtils.readFromDatabase(initialTransactionId)
+        val registrationInfo2 = DatabaseUtils.readFromDatabase(registrationInfo.spentTransactionId)
+        println(registrationInfo)
+        println(registrationInfo2)
     }
 }

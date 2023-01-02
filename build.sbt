@@ -8,7 +8,7 @@ libraryDependencies ++= Seq(
     "org.scala-lang.modules" %% "scala-parser-combinators" % "2.1.1",
     "io.github.getblok-io" % "getblok_plasma_2.12" % "1.0.0",
     "org.scalaj" %% "scalaj-http" % "2.4.2",
-    "org.rocksdb" % "rocksdbjni" % "7.8.3"
+    "org.postgresql" % "postgresql" % "42.5.1"
 )
 
 dependencyOverrides += "org.ergoplatform" %% "ergo-appkit" % "ac116c85-SNAPSHOT"

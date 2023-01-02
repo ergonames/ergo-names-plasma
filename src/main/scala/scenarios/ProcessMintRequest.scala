@@ -83,7 +83,7 @@ object ProcessMintRequest {
       val proxyBoxReceiverAddressBytes = ErgoTreeSerializer.DefaultSerializer.deserializeErgoTree(proxyBoxReceiverAddressBytesRaw)
       val proxyBoxReceiverAddress = Address.fromErgoTree(proxyBoxReceiverAddressBytes, ctx.getNetworkType)
 
-      val tokenMap: PlasmaMap[ErgoNameHash, ErgoId] = RegistrySyncEngine.syncFromLocal()
+      val tokenMap: PlasmaMap[ErgoNameHash, ErgoId] = RegistrySyncEngine.syncFromLocal(initialTxId)
       val ergoname: ErgoNameHash = ErgoName(ergoNameToRegister).toErgoNameHash
       val tokenId: ErgoId = contractBox.getId()
       val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergoname -> tokenId)

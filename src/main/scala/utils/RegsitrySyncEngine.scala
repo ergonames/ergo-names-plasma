@@ -17,8 +17,16 @@ import org.ergoplatform.explorer.client.model.TransactionInfo
 
 object RegistrySyncEngine {
 
-    def syncFromLocal(): PlasmaMap[ErgoNameHash, ErgoId] = {
+    def syncFromLocal(initialTransactionId: String): PlasmaMap[ErgoNameHash, ErgoId] = {
         val registry = syncEmptyRegistry()
+        var registrationInfo = readFromDatabase(initialTransactionId)
+        var spentTransactionId = registrationInfo.spentTransactionId
+        if (spentTransactionId != null) {
+            registrationInfo = readFromDatabase(spentTransactionId)
+            val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(registrationInfo.ergonameRegistered -> registrationInfo.ergonameTokenId)
+            val result: ProvenResult[ErgoId] = registry.insert(ergonameData: _*)
+            spentTransactionId = registrationInfo.spentTransactionId
+        }
         registry
     }
 
