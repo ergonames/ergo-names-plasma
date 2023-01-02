@@ -31,6 +31,9 @@ Disclaimer: Current proxy contract is completely unsafe. The funds deposited int
   - [X] Sync using explorer API
   - [ ] Sync using Ergo node API
   - [X] Store data in local database
+- [ ] Mempool Tracker
+  - [X] Track proxy contract transactions
+  - [ ] Remove transactions once used in minting transaction
 - [ ] Minting Information
   - [X] Mint new ErgoName NFT
   - [ ] Correct price paid
