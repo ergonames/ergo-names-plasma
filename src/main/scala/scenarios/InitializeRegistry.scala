@@ -47,7 +47,7 @@ object InitializeRegistry {
       )
       val contractAddress = Address.fromErgoTree(compiledContract.getErgoTree, ctx.getNetworkType)
 
-      val boxesToSpend = ctx.getUnspentBoxesFor(senderAddress, 0, 20)
+      val boxesToSpend = BoxOperations.createForSender(senderAddress, ctx).withInputBoxesLoader(new ExplorerAndPoolUnspentBoxesLoader()).loadTop()
 
       val tokenMap = new PlasmaMap[ErgoNameHash, ErgoId](AvlTreeFlags.AllOperationsAllowed, PlasmaParameters.default)
       

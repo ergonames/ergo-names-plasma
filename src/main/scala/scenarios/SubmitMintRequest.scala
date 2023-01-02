@@ -58,8 +58,8 @@ object SubmitMintRequest {
 
             val contractAddress = Address.fromErgoTree(compiledProxyContract.getErgoTree, ctx.getNetworkType)
 
-            val walletBoxes = ctx.getUnspentBoxesFor(senderAddress, 0, 20)
-
+            val walletBoxes = BoxOperations.createForSender(senderAddress, ctx).withInputBoxesLoader(new ExplorerAndPoolUnspentBoxesLoader()).loadTop()
+            
             val requestBox = ctx.newTxBuilder().outBoxBuilder()
                 .value(Parameters.MinChangeValue + Parameters.MinFee)
                 .contract(compiledProxyContract)
