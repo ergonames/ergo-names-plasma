@@ -67,7 +67,7 @@ object UpdateRegistry {
       val registers = contractBox.getRegisters()
       val registry = registers.get(0)
 
-      val tokenMap: PlasmaMap[ErgoNameHash, ErgoId] = RegistrySyncEngine.syncFromLocal()
+      val tokenMap: PlasmaMap[ErgoNameHash, ErgoId] = RegistrySyncEngine.syncFromLocal(initialTxId)
       val ergoname: ErgoNameHash = ErgoName(ergoNameToRegister).toErgoNameHash
       val tokenId: ErgoId = contractBox.getId()
       val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergoname -> tokenId)

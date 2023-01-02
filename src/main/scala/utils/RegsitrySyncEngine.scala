@@ -2,7 +2,7 @@ package utils
 
 import types.{ErgoName, ErgoNameHash, RegistrationInfo}
 import utils.BoxUtils.convertOutputInfoToErgoBox
-import utils.DatabaseUtils.{readFromDatabase, getTotalKeys}
+import utils.DatabaseUtils.{readFromDatabase}
 
 import io.getblok.getblok_plasma.{PlasmaParameters, ByteConversion}
 import io.getblok.getblok_plasma.collections.{OpResult, PlasmaMap, Proof, ProvenResult}
@@ -17,15 +17,16 @@ import org.ergoplatform.explorer.client.model.TransactionInfo
 
 object RegistrySyncEngine {
 
-    def syncFromLocal(): PlasmaMap[ErgoNameHash, ErgoId] = {
+    def syncFromLocal(initialTransactionId: String): PlasmaMap[ErgoNameHash, ErgoId] = {
         val registry = syncEmptyRegistry()
-        val totalKeys = getTotalKeys()
-        for (i <- 1 to totalKeys) {
-            val registrationInfo = readFromDatabase(i)
-            val ergonameHash = registrationInfo.ergoNameHash
-            val tokenId = registrationInfo.tokenId
-            val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergonameHash -> tokenId)
+        var registrationInfo = readFromDatabase(initialTransactionId)
+        var spentTransactionId = registrationInfo.spentTransactionId
+        registrationInfo = readFromDatabase(spentTransactionId)
+        while (registrationInfo != null) {
+            val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(registrationInfo.ergonameRegistered -> registrationInfo.ergonameTokenId)
             val result: ProvenResult[ErgoId] = registry.insert(ergonameData: _*)
+            spentTransactionId = registrationInfo.spentTransactionId
+            registrationInfo = readFromDatabase(spentTransactionId)
         }
         registry
     }

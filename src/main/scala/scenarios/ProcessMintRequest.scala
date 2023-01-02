@@ -1,6 +1,6 @@
 package scenarios
 
-import utils.{ErgoScriptContract, RegistrySyncEngine}
+import utils.{ErgoScriptContract, RegistrySyncEngine, DatabaseUtils}
 import types.{ErgoName, ErgoNameHash}
 
 import io.getblok.getblok_plasma.{PlasmaParameters, ByteConversion}
@@ -16,7 +16,6 @@ import sigmastate.serialization.ErgoTreeSerializer
 object ProcessMintRequest {
 
   def main(args: Array[String]): Unit = {
-      val proxyBoxToSpendId = "0c3bac578d467863b71b10474d99ce816df19c32513b40cd0f06a5674dac3b48"
       val txInfo = processMintRequestScenario("config.json")
       println(txInfo)
   }
@@ -56,14 +55,8 @@ object ProcessMintRequest {
       )
       val contractAddress = Address.fromErgoTree(compiledContract.getErgoTree, ctx.getNetworkType)
 
-      val mostRecentTransactionId = RegistrySyncEngine.getMostRecentTransactionId(initialTxId, explorerClient)
-      val registryEmpty = RegistrySyncEngine.checkIfRegistryIsEmpty(initialTxId, explorerClient)
-      var mostRecentBoxId = ""
-      if (registryEmpty) {
-        mostRecentBoxId = RegistrySyncEngine.getOutputZeroBoxIdFromTransactionId(mostRecentTransactionId, explorerClient)
-      } else {
-        mostRecentBoxId = RegistrySyncEngine.getOutputOneBoxIdFromTransactionId(mostRecentTransactionId, explorerClient)
-      }
+      val mostRecentTransactionId = DatabaseUtils.getMostRecentMintTransactionId()
+      val mostRecentBoxId = RegistrySyncEngine.getOutputOneBoxIdFromTransactionId(mostRecentTransactionId, explorerClient)
 
       val contractBoxes = ctx.getBoxesById(mostRecentBoxId)
       val contractBox = contractBoxes(0)
@@ -83,7 +76,7 @@ object ProcessMintRequest {
       val proxyBoxReceiverAddressBytes = ErgoTreeSerializer.DefaultSerializer.deserializeErgoTree(proxyBoxReceiverAddressBytesRaw)
       val proxyBoxReceiverAddress = Address.fromErgoTree(proxyBoxReceiverAddressBytes, ctx.getNetworkType)
 
-      val tokenMap: PlasmaMap[ErgoNameHash, ErgoId] = RegistrySyncEngine.syncFromLocal()
+      val tokenMap: PlasmaMap[ErgoNameHash, ErgoId] = RegistrySyncEngine.syncFromLocal(initialTxId)
       val ergoname: ErgoNameHash = ErgoName(ergoNameToRegister).toErgoNameHash
       val tokenId: ErgoId = contractBox.getId()
       val ergonameData: Seq[(ErgoNameHash, ErgoId)] = Seq(ergoname -> tokenId)
