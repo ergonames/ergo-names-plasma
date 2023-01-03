@@ -12,9 +12,7 @@
       "networkType": ""
     },
     "parameters": {
-      "defaultExplorerApiUrl": "",
       "initialTxId": "",
-      "proxyBoxToSpendId": "",
       "receiverAddress": "",
       "ergoNameToRegister": "",
       "liveMode": false

@@ -16,8 +16,9 @@ import sigmastate.serialization.ErgoTreeSerializer
 object ProcessMintRequest {
 
   def main(args: Array[String]): Unit = {
-      val txInfo = processMintRequestScenario("config.json", "")
-      println(txInfo)
+    val proxyBoxToSpendId = ""
+    val txInfo = processMintRequestScenario("config.json", proxyBoxToSpendId)
+    println(txInfo)
   }
 
   def processMintRequestScenario(configFilePath: String, proxyBoxToSpendId: String): String = {
@@ -29,7 +30,6 @@ object ProcessMintRequest {
     val configParameters = toolConfig.getParameters()
     val defaultTestnetExplorerUrl = configParameters.get("defaultTestnetExplorerUrl")
     val initialTxId = configParameters.get("initialTxId")
-    // val proxyBoxToSpendId = configParameters.get("proxyBoxToSpendId")
     val liveModeRaw = configParameters.get("liveMode")
     var liveMode = false
     if (liveModeRaw == "true") {
