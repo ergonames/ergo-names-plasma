@@ -19,12 +19,12 @@ fn main() {
     loop {
         let proxy_transactions: Vec<Value> = get_pending_transactions_at_proxy_contract().unwrap();
         let mempool_transactions: Vec<MempoolTransaction> = convert_to_mempool_transaction(proxy_transactions);
-        write_to_database(mempool_transactions);
+        write_to_pending_registrations_table(mempool_transactions);
         sleep(Duration::from_secs(10));
     }
 }
 
-fn write_to_database(mempool_transactions: Vec<MempoolTransaction>) {
+fn write_to_pending_registrations_table(mempool_transactions: Vec<MempoolTransaction>) {
     let mut database_client: Client = connect_to_database().unwrap();
     for mempool_transaction in mempool_transactions {
         let query: &str = "INSERT INTO pending_registrations (transaction_id, box_id) VALUES ($1, $2) ON CONFLICT DO NOTHING";
@@ -71,11 +71,15 @@ fn get_pending_transactions_at_proxy_contract() -> Result<Vec<Value>> {
     return Ok(transactions);
 }
 
-fn create_database_schema() {
+fn create_pending_registrations_schema() {
     let mut database_client: Client = connect_to_database().unwrap();
     let query: &str = "CREATE TABLE IF NOT EXISTS pending_registrations (
         transaction_id VARCHAR(64) PRIMARY KEY,
         box_id VARCHAR(64) NOT NULL
     );";
     database_client.execute(query, &[]).unwrap();
+}
+
+fn create_database_schema() {
+    create_pending_registrations_schema();
 }
