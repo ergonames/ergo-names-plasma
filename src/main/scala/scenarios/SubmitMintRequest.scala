@@ -60,12 +60,14 @@ object SubmitMintRequest {
 
             val walletBoxes = BoxOperations.createForSender(senderAddress, ctx).withInputBoxesLoader(new ExplorerAndPoolUnspentBoxesLoader()).loadTop()
             
+            val receiverAddress = Address.create(configParameters.get("receiverAddress"))
+
             val requestBox = ctx.newTxBuilder().outBoxBuilder()
                 .value(Parameters.MinChangeValue + Parameters.MinFee)
                 .contract(compiledProxyContract)
                 .registers(
                     ErgoValue.of(ergoNameToRegister.getBytes()),
-                    ErgoValue.of(senderAddress.getErgoAddress().script.bytes)
+                    ErgoValue.of(receiverAddress.getErgoAddress().script.bytes)
                 )
                 .build()
 
