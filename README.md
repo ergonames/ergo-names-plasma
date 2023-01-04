@@ -28,7 +28,7 @@ Disclaimer: Current proxy contract is completely unsafe. The funds deposited int
   - [ ] Ensure funds are sent to mint contract
   - [X] Ensure registers are set correctly
 - [ ] Sync Engine
-  - [X] Sync using explorer API
+  - [ ] Remove explorer calls
   - [ ] Sync using Ergo node API
   - [X] Store data in local database
 - [ ] Mempool Tracker
@@ -38,6 +38,7 @@ Disclaimer: Current proxy contract is completely unsafe. The funds deposited int
   - [X] Mint new ErgoName NFT
   - [ ] Correct price paid
 - [ ] System
+  - [ ] Use chained transactions to allow for multiple mints per block
   - [ ] Run as daemon
   - [ ] Dockerize service
 
