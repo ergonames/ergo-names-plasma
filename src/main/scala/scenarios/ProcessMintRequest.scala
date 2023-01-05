@@ -24,11 +24,11 @@ object ProcessMintRequest {
   def processMintRequestScenario(configFilePath: String, proxyBoxToSpendId: String): String = {
     val contract = ErgoScriptContract("src/main/resources/MintingContract.ergoscript").loadContract()
 
-    val toolConfig = ErgoToolConfig.load("config.json")
+    val toolConfig = ErgoToolConfig.load(configFilePath)
     val nodeConfig = toolConfig.getNode()
 
     val configParameters = toolConfig.getParameters()
-    val defaultTestnetExplorerUrl = configParameters.get("defaultTestnetExplorerUrl")
+    val explorerApiUrl = configParameters.get("explorerApiUrl")
     val initialTxId = configParameters.get("initialTxId")
     val liveModeRaw = configParameters.get("liveMode")
     var liveMode = false
@@ -36,8 +36,8 @@ object ProcessMintRequest {
       liveMode = true
     }
 
-    val ergoClient = RestApiErgoClient.create(nodeConfig, RestApiErgoClient.defaultTestnetExplorerUrl)
-    val explorerClient = new ExplorerApiClient(RestApiErgoClient.defaultTestnetExplorerUrl).createService(classOf[DefaultApi])
+    val ergoClient = RestApiErgoClient.create(nodeConfig, explorerApiUrl)
+    val explorerClient = new ExplorerApiClient(explorerApiUrl).createService(classOf[DefaultApi])
     val txId = ergoClient.execute((ctx: BlockchainContext) => {
       val prover = ctx.newProverBuilder
         .withMnemonic(
