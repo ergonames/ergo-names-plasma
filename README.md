@@ -10,6 +10,7 @@ Disclaimer: Current proxy contract is completely unsafe. The funds deposited int
 
 ### Configuration File Parameters
 
+- **explorerApiUrl:** The URL of the Ergo Explorer API.
 - **initialTxId:** The initial transaction ID that created the on chain AvlTree registry.
 - **receiverAddress:** Used in SubmitMintRequest scenario to set the receiver address of the minted NFT.
 - **ergoNameToRegister:** The ErgoName to register is regular text.

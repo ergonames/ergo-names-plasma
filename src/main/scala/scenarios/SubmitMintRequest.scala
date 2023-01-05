@@ -29,7 +29,7 @@ object SubmitMintRequest {
         val nodeConfig = toolConfig.getNode()
 
         val configParameters = toolConfig.getParameters()
-        val defaultTestnetExplorerUrl = configParameters.get("defaultTestnetExplorerUrl")
+        val explorerApiUrl = configParameters.get("explorerApiUrl")
         val initialTxId = configParameters.get("initialTxId")
         val ergoNameToRegister = configParameters.get("ergoNameToRegister")
         val liveModeRaw = configParameters.get("liveMode")
@@ -38,8 +38,8 @@ object SubmitMintRequest {
             liveMode = true
         }
 
-        val ergoClient = RestApiErgoClient.create(nodeConfig, RestApiErgoClient.defaultTestnetExplorerUrl)
-        val explorerClient = new ExplorerApiClient(RestApiErgoClient.defaultTestnetExplorerUrl).createService(classOf[DefaultApi])
+        val ergoClient = RestApiErgoClient.create(nodeConfig, explorerApiUrl)
+        val explorerClient = new ExplorerApiClient(explorerApiUrl).createService(classOf[DefaultApi])
         val txId = ergoClient.execute((ctx: BlockchainContext) => {
             val prover = ctx.newProverBuilder
                 .withMnemonic(
