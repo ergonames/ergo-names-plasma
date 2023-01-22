@@ -15,7 +15,7 @@ struct MempoolTransaction {
 }
 
 fn main() {
-    create_pending_registrations_schema();
+    create_pending_proxy_boxes_schema();
     create_pending_insertions_schema();
     loop {
         let proxy_transactions: Vec<Value> = get_pending_transactions_at_proxy_contract().unwrap();
@@ -28,7 +28,7 @@ fn main() {
 fn write_to_pending_regisrations_table(mempool_transactions: Vec<MempoolTransaction>) {
     let mut database_client: Client = connect_to_database().unwrap();
     for mempool_transaction in mempool_transactions {
-        let query: &str = "INSERT INTO pending_registrations (transaction_id, box_id) VALUES ($1, $2) ON CONFLICT DO NOTHING";
+        let query: &str = "INSERT INTO pending_proxy_boxes (transaction_id, box_id) VALUES ($1, $2) ON CONFLICT DO NOTHING";
         database_client.execute(query, &[&mempool_transaction.transaction_id, &mempool_transaction.box_id]).unwrap();
     }
 }
@@ -71,9 +71,9 @@ fn get_pending_transactions_at_proxy_contract() -> Result<Vec<Value>> {
     return Ok(transactions);
 }
 
-fn create_pending_registrations_schema() {
+fn create_pending_proxy_boxes_schema() {
     let mut database_client: Client = connect_to_database().unwrap();
-    let query: &str = "CREATE TABLE IF NOT EXISTS pending_registrations (
+    let query: &str = "CREATE TABLE IF NOT EXISTS pending_proxy_boxes (
         transaction_id VARCHAR(64) PRIMARY KEY,
         box_id VARCHAR(64) NOT NULL
     );";
