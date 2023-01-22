@@ -8,6 +8,20 @@
 
 Disclaimer: Current proxy contract is completely unsafe. The funds deposited into the contract can be sent to any address.
 
+### Service Overview
+
+##### Minting Service
+
+The `minting-service` is used to mint new ErgoNames NFTs. The service is used to create a transaction by combining the on-chain AvlTree registry with the transactions in the mempool. The service then submits the transaction to the network.
+
+##### Sync Engine
+
+The `sync-engine` tracks on-chain transactions and stores the data in a local database. The information in the local database is used to rebuild the on-chain AvlTree registry.
+
+##### Mempool Tracker
+
+The `mempool-tracker` tracks transactions in the mempool at the proxy contract address and stores the data in a local database. The transactions in the mempool are used as an input in the minting transaction.
+
 ### Configuration File Parameters
 
 - **explorerApiUrl:** The URL of the Ergo Explorer API.
