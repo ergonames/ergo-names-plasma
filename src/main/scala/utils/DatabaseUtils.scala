@@ -13,7 +13,7 @@ object DatabaseUtils {
     def readFromDatabase(mintTransactionId: String): RegistrationInfo = {
         val connection = DriverManager.getConnection(getDatabasePath())
         val statement = connection.createStatement()
-        val resultSet = statement.executeQuery(s"SELECT * FROM registration_information WHERE mint_transaction_id = '$mintTransactionId'")
+        val resultSet = statement.executeQuery(s"SELECT * FROM confirmed_registry_insertions WHERE mint_transaction_id = '$mintTransactionId'")
         if (resultSet.next()) {
             val registrationInfo = getRegistrationInfo(resultSet)
             connection.close()
@@ -48,7 +48,7 @@ object DatabaseUtils {
     def getMostRecentMintTransactionId(): String = {
         val connection = DriverManager.getConnection(getDatabasePath())
         val statement = connection.createStatement()
-        val resultSet = statement.executeQuery(s"SELECT * FROM registration_information WHERE spent_transaction_id IS NULL")
+        val resultSet = statement.executeQuery(s"SELECT * FROM confirmed_registry_insertions WHERE spent_transaction_id IS NULL")
         if (resultSet.next()) {
             val registrationInfo = getRegistrationInfo(resultSet)
             connection.close()

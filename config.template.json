@@ -12,6 +12,7 @@
       "networkType": ""
     },
     "parameters": {
+      "explorerApiUrl": "",
       "initialTxId": "",
       "receiverAddress": "",
       "ergoNameToRegister": "",
