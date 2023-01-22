@@ -84,4 +84,11 @@ object DatabaseUtils {
         path
     }
 
+    def writeToPendingInsertions(info: RegistrationInfo) = {
+        val connection = DriverManager.getConnection(getDatabasePath())
+        val statement = connection.createStatement()
+        statement.executeUpdate(s"INSERT INTO pending_registrations (transaction_id, box_id) VALUES ('${info.mintTransactionId}', '${info.ergonameTokenId}')")
+        connection.close()
+    }
+
 }

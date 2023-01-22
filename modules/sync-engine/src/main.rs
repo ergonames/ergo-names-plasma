@@ -22,7 +22,7 @@ struct InitialTransactionInformation {
 }
 
 fn main() {
-    create_database_schema();
+    create_registration_information_schema();
     let initial_transaction_info: InitialTransactionInformation = get_inital_transaction_information(INITIAL_AVL_TREE_CREATION_ID);
     let initial_transaction_info: MintInformation = convert_inital_transaction_information_to_mint_transaction_information(initial_transaction_info);
     let mut last_spent_transaction_id: Option<String> = initial_transaction_info.clone().spent_transaction_id.clone();
