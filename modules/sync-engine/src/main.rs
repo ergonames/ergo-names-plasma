@@ -42,7 +42,7 @@ fn main() {
 
 fn write_to_confirmed_registry_insertions_table(mint_information: MintInformation) {
     let mut database_client: Client = connect_to_database().unwrap();
-    let query: &str = "INSERT INTO confirmed_registry_insertions (ergoname_registered, mint_transaction_id, spent_transaction_id, ergoname_token_id) VALUES ($1, $2, $3, $4) ON CONFLICT (ergoname_registered) DO NOTHING";
+    let query: &str = "INSERT INTO confirmed_registry_insertions (ergoname_registered, mint_transaction_id, spent_transaction_id, ergoname_token_id) VALUES ($1, $2, $3, $4)";
     database_client.execute(query, &[ &mint_information.ergoname_registered, &mint_information.mint_transaction_id, &mint_information.spent_transaction_id, &mint_information.ergoname_token_id]).unwrap();
 }
 
