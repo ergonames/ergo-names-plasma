@@ -16,7 +16,6 @@ struct MempoolTransaction {
 
 fn main() {
     create_pending_proxy_boxes_schema();
-    create_pending_insertions_schema();
     loop {
         let proxy_transactions: Vec<Value> = get_pending_transactions_at_proxy_contract().unwrap();
         let mempool_transactions: Vec<MempoolTransaction> = convert_to_mempool_transaction(proxy_transactions);
@@ -71,7 +70,7 @@ fn get_pending_transactions_at_proxy_contract() -> Result<Vec<Value>> {
     return Ok(transactions);
 }
 
-fn create_database_schema() {
+fn create_pending_proxy_boxes_schema() {
     let mut database_client: Client = connect_to_database().unwrap();
     let query: &str = "CREATE TABLE IF NOT EXISTS pending_proxy_boxes (
         transaction_id VARCHAR(64) PRIMARY KEY,
