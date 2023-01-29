@@ -27,7 +27,7 @@ object DatabaseUtils {
     def getPendingRegistrations(): Array[PendingRegistration] = {
         val connection = DriverManager.getConnection(getDatabasePath())
         val statement = connection.createStatement()
-        val resultSet = statement.executeQuery(s"SELECT * FROM pending_registrations")
+        val resultSet = statement.executeQuery(s"SELECT * FROM pending_proxy_boxes")
         if (resultSet.next()) {
             val pendingRegistrations = getPendingRegistrationInfo(resultSet)
             connection.close()
@@ -41,7 +41,7 @@ object DatabaseUtils {
     def removePendingRegistration(transactionId: String, boxId: String): Unit = {
         val connection = DriverManager.getConnection(getDatabasePath())
         val statement = connection.createStatement()
-        statement.executeUpdate(s"DELETE FROM pending_registrations WHERE transaction_id = '$transactionId' AND box_id = '$boxId'")
+        statement.executeUpdate(s"DELETE FROM pending_proxy_boxes WHERE transaction_id = '$transactionId' AND box_id = '$boxId'")
         connection.close()
     }
 
@@ -87,7 +87,7 @@ object DatabaseUtils {
     def writeToPendingInsertions(info: RegistrationInfo) = {
         val connection = DriverManager.getConnection(getDatabasePath())
         val statement = connection.createStatement()
-        statement.executeUpdate(s"INSERT INTO pending_registrations (transaction_id, box_id) VALUES ('${info.mintTransactionId}', '${info.ergonameTokenId}')")
+        statement.executeUpdate(s"INSERT INTO pending_proxy_boxes (transaction_id, box_id) VALUES ('${info.mintTransactionId}', '${info.ergonameTokenId}')")
         connection.close()
     }
 
