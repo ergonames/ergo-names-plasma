@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ergonames
+      POSTGRES_USER: ergonames
+      POSTGRES_DB: ergonames
+    ports:
+      - 5432:5432
+    volumes:
+      - ./db:/var/lib/postgresql/data
+
+  sync-engine:
+    build:
+      context: ./modules/sync-engine
+      dockerfile: Dockerfile
+    restart: unless-stopped
+  
+  mempool-tracker:
+    build:
+      context: ./modules/mempool-tracker
+      dockerfile: Dockerfile
+    restart: unless-stopped
