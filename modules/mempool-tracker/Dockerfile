@@ -4,4 +4,4 @@ WORKDIR /src/
 COPY ./ ./
 
 RUN cargo build --release
-CMD ["./target/release/mempool-tracker"]
+CMD ["./target/release/ergonames-mempool-tracker"]
