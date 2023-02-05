@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   db:
+    container_name: ergonames-registry-db
     image: postgres
     restart: always
     environment:
@@ -14,6 +15,7 @@ services:
       - ./db:/var/lib/postgresql/data
 
   pgadmin:
+    container_name: pgadmin
     image: dpage/pgadmin4:4.23
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
@@ -25,12 +27,14 @@ services:
       - db
 
   sync-engine:
+    container_name: ergonames-sync-engine
     build:
       context: ./modules/sync-engine
       dockerfile: Dockerfile
     restart: unless-stopped
-  
+
   mempool-tracker:
+    container_name: ergonames-mempool-tracker
     build:
       context: ./modules/mempool-tracker
       dockerfile: Dockerfile
