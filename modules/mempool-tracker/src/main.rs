@@ -4,7 +4,7 @@ use reqwest::blocking::Response;
 use serde_json::Value;
 use std::{time::Duration, thread::sleep};
 
-const DATABASE_PATH: &str = "postgresql://ergonames:ergonames@localhost:5432/ergonames";
+const DATABASE_PATH: &str = "postgresql://ergonames:ergonames@db:5432/ergonames";
 const PROXY_CONTRACT_ERGO_TREE: &str = "1003040001010400d801d601b2a5730000d1eded7301e6c67201040e93c17201c1b2a4730200";
 const NODE_BASE_URL: &str = "http://104.237.139.78:9052";
 

@@ -3,7 +3,7 @@ use postgres::{Client, NoTls};
 use reqwest::blocking::Response;
 use serde_json::Value;
 
-const DATABASE_PATH: &str = "postgresql://ergonames:ergonames@localhost:5432/ergonames";
+const DATABASE_PATH: &str = "postgresql://ergonames:ergonames@db:5432/ergonames";
 const INITIAL_AVL_TREE_CREATION_ID: &str = "e271e7cb9b9c7932546e8a5746c91cb1c0f1114ff173a90e1fe979170f71c579";
 const EXPLORER_API_BASE_URL: &str = "https://api-testnet.ergoplatform.com/api";
 
