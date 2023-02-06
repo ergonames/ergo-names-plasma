@@ -15,6 +15,8 @@ ErgoNames Minting Contract
 */
 
 {
+    val pricePerChar = 1000000L
+
     val registryInputBox = SELF
     val userInputBox = INPUTS(1)
 
@@ -30,6 +32,7 @@ ErgoNames Minting Contract
 
     val mintBox = OUTPUTS(0)
     val updatedRegistryBox = OUTPUTS(1)
+    val paymentBox = OUTPUTS(2)
 
     val newErgoNameToken = mintBox.tokens(0)
 
@@ -52,7 +55,12 @@ ErgoNames Minting Contract
 
     val validPricePaid = {
         val inputsValue = INPUTS.fold(0L, {(x: Long, b: Box) => x + b.value})
-        1==1
+        val ergonameLength = nameToRegister.size
+        val priceNeeded = ergonameLength * pricePerChar
+
+        val correctPricePaid = paymentBox.value >= priceNeeded
+
+        correctPricePaid
     }
 
     val validRegistration = {
